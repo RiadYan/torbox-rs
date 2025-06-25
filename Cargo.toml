@@ -19,7 +19,9 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "serde_json",
     "derive",
 ] }
-torbox-core-rs = { path = "local-crates/torbox-core-rs", features = ["specta"] }
+torbox-core-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-core-rs", features = ["specta"] }
+torbox-ddl-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-ddl-rs" }
+torbox-torrent-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-torrent-rs" }
 
 
 [workspace]
