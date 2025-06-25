@@ -1,6 +1,5 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentStatus {
@@ -33,6 +32,18 @@ pub struct TorrentStatus {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct TorrentMeta {
+    pub name: String,
+    pub hash: String,
+    pub size: u64,
+    pub trackers: Vec<String>,
+    pub seeds: u64,
+    pub peers: u64,
+    pub files: Vec<TorrentFile>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentData {
     pub name: String,
     pub size: u64,
@@ -45,13 +56,4 @@ pub struct TorrentData {
 pub struct TorrentFile {
     pub name: String,
     pub size: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[cfg_attr(feature = "specta", derive(specta::Type))]
-#[serde(untagged)]
-pub enum ApiDataResponse {
-    Message(String),
-    Torrent(Box<TorrentData>),
-    Status(Box<Vec<TorrentStatus>>),
 }

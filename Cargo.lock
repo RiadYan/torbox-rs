@@ -281,6 +281,9 @@ dependencies = [
 [[package]]
 name = "torbox-ddl-rs"
 version = "0.0.1-alpha.1"
+dependencies = [
+ "specta",
+]
 
 [[package]]
 name = "torbox-rs"
