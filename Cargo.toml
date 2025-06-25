@@ -2,7 +2,7 @@
 name = "torbox-rs"
 version = "0.0.1-alpha.1"
 edition = "2024"
-description = "Rust SDK for the torbox API"
+description = "Rust SDK for the Torbox API"
 license = "MIT"
 authors = ["CarrotRub"]
 repository = "https://github.com/CarrotRub/torbox-rs"
