@@ -20,6 +20,7 @@ pub struct UserProfile {
     pub auth_id: String,
     pub user_referral: String,
     pub base_email: String,
+    #[serde(default)]
     pub settings: Option<HashMap<String, String>>,
 }
 

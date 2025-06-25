@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
@@ -56,4 +58,7 @@ pub struct TorrentData {
 pub struct TorrentFile {
     pub name: String,
     pub size: u64,
+    pub hash: Option<String>,
 }
+
+pub type TorrentMap = HashMap<String, TorrentFile>;
