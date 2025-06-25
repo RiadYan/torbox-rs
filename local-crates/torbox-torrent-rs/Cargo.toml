@@ -2,6 +2,25 @@
 name = "torbox-torrent-rs"
 version = "0.0.1-alpha.1"
 edition = "2024"
-publish = false
+description = "Rust SDK Torrent for the Torbox API"
+license = "MIT"
+authors = ["CarrotRub"]
+repository = "https://github.com/CarrotRub/torbox-rs"
+homepage = "https://github.com/CarrotRub/torbox-rs"
+keywords = ["sdk", "development-tools"]
+
+[features]
+default = []
+specta = ["dep:specta", "torbox-core-rs/specta"]
+
 
 [dependencies]
+specta = { version = "2.0.0-rc.22", optional = true, features = [
+    "serde",
+    "serde_json",
+    "derive",
+    "chrono",
+] }
+torbox-core-rs = { version = "0.0.1-alpha.1", path = "../torbox-core-rs", features = [
+    "specta",
+] }

@@ -283,6 +283,7 @@ name = "torbox-ddl-rs"
 version = "0.0.1-alpha.1"
 dependencies = [
  "specta",
+ "torbox-core-rs",
 ]
 
 [[package]]
@@ -298,6 +299,10 @@ dependencies = [
 [[package]]
 name = "torbox-torrent-rs"
 version = "0.0.1-alpha.1"
+dependencies = [
+ "specta",
+ "torbox-core-rs",
+]
 
 [[package]]
 name = "unicode-ident"
