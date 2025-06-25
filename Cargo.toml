@@ -4,10 +4,14 @@ version = "0.0.1-alpha.1"
 edition = "2024"
 description = "Rust SDK for the torbox API"
 license = "MIT"
+authors = ["CarrotRub"]
+repository = "https://github.com/CarrotRub/torbox-rs"
+homepage = "https://github.com/CarrotRub/torbox-rs"
+keywords = ["sdk", "development-tools"]
 
 [features]
 default = []
-specta = ["dep:specta"]
+specta = ["dep:specta", "torbox-core-rs/specta"]
 
 [dependencies]
 specta = { version = "2.0.0-rc.22", optional = true, features = [
@@ -15,6 +19,10 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "serde_json",
     "derive",
 ] }
+torbox-core-rs = { path = "local-crates/torbox-core-rs", features = [
+    "specta",
+], version = "0.0.1-alpha.1" }
+
 
 [workspace]
 members = [

@@ -4,6 +4,10 @@ version = "0.0.1-alpha.1"
 edition = "2024"
 publish = false
 
+[features]
+default = []
+specta = ["dep:specta"]
+
 [dependencies]
 serde = { workspace = true }
 specta = { version = "2.0.0-rc.22", optional = true, features = [
