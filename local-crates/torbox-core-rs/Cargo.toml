@@ -20,4 +20,6 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "serde",
     "serde_json",
     "derive",
+    "chrono",
 ] }
+chrono = { version = "0.4.41", features = ["serde"] }
