@@ -10,11 +10,8 @@ homepage = "https://github.com/CarrotRub/torbox-rs"
 keywords = ["sdk", "development-tools"]
 
 [features]
-default = ["reqwest"]
+default = []
 specta = ["dep:specta"]
-reqwest = ["dep:reqwest"]
-ureq = ["dep:ureq"]
-
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
@@ -29,5 +26,4 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "chrono",
 ] }
 
-reqwest = { version = "0.12.20", optional = true, features = ["json"] }
-ureq = { version = "3.0.12", optional = true }
+reqwest = { version = "0.12.20", features = ["json"] }

@@ -1,63 +1,35 @@
-use crate::{network::config::ApiHeaders, structs::ApiResponse, tests::load_token_from_file};
+use reqwest::Method;
+
+use crate::{api::ApiResponse, client::TorboxClient, tests::load_token_from_file};
 
 #[tokio::test]
 async fn test_user_profile_endpoint_settings() {
     let token = load_token_from_file().expect("Missing TORBOX_TOKEN in .token file");
-    let headers = ApiHeaders::new(&token);
+    let client = TorboxClient::new(token);
 
-    let client = reqwest::Client::new();
-    let res = client
-        .get("https://api.torbox.app/v1/api/user/me?settings=true")
-        .headers(headers.headers.clone())
-        .send()
+    let response: ApiResponse = client
+        .request(Method::GET, "api/user/me?settings=true")
         .await
-        .expect("Request failed");
+        .expect("Failed to fetch user profile with settings");
 
-    assert!(
-        res.status().is_success(),
-        "API returned error status: {}",
-        res.status()
-    );
+    assert!(response.success, "API responded with success=false");
+    assert!(response.data.is_some(), "Expected user profile data");
 
-    let response: ApiResponse = res
-        .json()
-        .await
-        .expect("Failed to deserialize into ApiResponse");
-
-    response
-        .data
-        .expect("Expected user profile data in API response");
-
-    println!("Successfully gotten user profile !");
+    println!("Successfully gotten user profile with settings");
 }
 
 #[tokio::test]
 async fn test_user_profile_endpoint_no_settings() {
     let token = load_token_from_file().expect("Missing TORBOX_TOKEN in .token file");
-    let headers = ApiHeaders::new(&token);
+    let client = TorboxClient::new(token);
 
-    let client = reqwest::Client::new();
-    let res = client
-        .get("https://api.torbox.app/v1/api/user/me?settings=false")
-        .headers(headers.headers.clone())
-        .send()
+    let response: ApiResponse = client
+        .request(Method::GET, "api/user/me?settings=false")
         .await
-        .expect("Request failed");
+        .expect("Failed to fetch user profile without settings");
 
-    assert!(
-        res.status().is_success(),
-        "API returned error status: {}",
-        res.status()
-    );
+    assert!(response.success, "API responded with success=false");
+    assert!(response.data.is_some(), "Expected user profile data");
 
-    let response: ApiResponse = res
-        .json()
-        .await
-        .expect("Failed to deserialize into ApiResponse");
-
-    response
-        .data
-        .expect("Expected user profile data in API response");
-
-    println!("Successfully gotten user profile !");
+    println!("Successfully gotten user profile without settings");
 }

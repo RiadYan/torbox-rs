@@ -17,22 +17,3 @@ impl ApiHeaders {
         Self { headers }
     }
 }
-
-#[cfg(feature = "ureq")]
-#[derive(Debug, Clone)]
-pub struct ApiHeadersUreq {
-    pub headers: Vec<(String, String)>,
-}
-
-#[cfg(feature = "ureq")]
-impl ApiHeadersUreq {
-    pub fn new(token: &str) -> Self {
-        Self {
-            headers: vec![
-                ("Content-Type".into(), "application/json".into()),
-                ("Accept".into(), "application/json".into()),
-                ("Authorization".into(), format!("Bearer {}", token)),
-            ],
-        }
-    }
-}

@@ -2,7 +2,6 @@ use std::env;
 
 use dotenvy::from_filename;
 
-mod torrent;
 mod user;
 mod webdownload;
 
