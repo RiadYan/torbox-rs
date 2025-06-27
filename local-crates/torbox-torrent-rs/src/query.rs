@@ -8,3 +8,10 @@ pub struct ListTorrentsQuery {
     pub offset: Option<u32>,
     pub limit: Option<u32>,
 }
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct TorrentInfoQuery {
+    pub hash: String,
+    pub timeout: Option<u32>,
+}

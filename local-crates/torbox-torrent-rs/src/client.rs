@@ -10,7 +10,7 @@ use crate::{
     body::{TorrentCreateBody, TorrentInfoBody},
     endpoint::{ListTorrentsGetEp, TorrentCreateEp, TorrentInfoGetEp, TorrentInfoPostEp},
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::ListTorrentsQuery,
+    query::{ListTorrentsQuery, TorrentInfoQuery},
 };
 
 #[cfg_attr(feature = "specta", derive(specta::Type))]
@@ -81,17 +81,10 @@ impl<'a> TorrentApi<'a> {
     /// Unexpected JSON        → `ApiError::UnexpectedPayload`
     pub async fn get_torrent_info(
         &self,
-        hash: &'a str,
-        timeout: Option<u32>,
+        query: TorrentInfoQuery,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {
-        let url = format!(
-            "{}?hash={}&timeout={}",
-            TorrentInfoGetEp::PATH,
-            hash,
-            timeout.unwrap_or(10)
-        );
         Endpoint::<TorrentInfoGetEp>::new(self.client)
-            .call_no_body(&url) // Req = ()
+            .call_query(query)
             .await
     }
 

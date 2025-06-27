@@ -4,7 +4,7 @@ use torbox_core_rs::{api::ApiResponse, client::EndpointSpec, data::torrent::Torr
 use crate::{
     body::{TorrentCreateBody, TorrentInfoBody},
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::ListTorrentsQuery,
+    query::{ListTorrentsQuery, TorrentInfoQuery},
 };
 
 pub struct TorrentCreateEp;
@@ -39,7 +39,7 @@ pub struct TorrentInfoGetEp;
 
 impl EndpointSpec for TorrentInfoGetEp {
     /// GET uses no JSON body, so `()` (unit) is fine.
-    type Req = ();
+    type Req = TorrentInfoQuery;
     type Resp = ApiResponse<TorrentInfoPayload>;
     const PATH: &'static str = "api/torrents/torrentinfo";
     const METHOD: Method = Method::GET;
