@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::data::ApiDataResponse;
-
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(untagged)]
 pub enum ErrorValue {
@@ -12,9 +10,9 @@ pub enum ErrorValue {
 
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct ApiResponse {
+pub struct ApiResponse<T> {
     pub success: bool,
     pub error: Option<ErrorValue>,
     pub detail: Option<String>,
-    pub data: Option<ApiDataResponse>,
+    pub data: Option<T>,
 }

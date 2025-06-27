@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentStatus {
@@ -62,3 +63,16 @@ pub struct TorrentFile {
 }
 
 pub type TorrentMap = HashMap<String, TorrentFile>;
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub enum TorrentDownloadState {
+    Downloading,
+    Uploading,
+    Stalled,
+    Paused,
+    Completed,
+    Cached,
+    MetaDl,
+    CheckingResumeData,
+}

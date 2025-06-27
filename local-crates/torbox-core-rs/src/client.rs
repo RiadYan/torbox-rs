@@ -1,7 +1,76 @@
+use std::marker::PhantomData;
+
 use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
 use specta::Type;
+
+use crate::api::ApiResponse;
+use crate::error::ApiError;
+
+pub trait EndpointSpec {
+    /// JSON body you send
+    type Req: serde::Serialize;
+    /// Typed payload you expect back on success
+    type Resp: serde::de::DeserializeOwned;
+
+    const PATH: &'static str;
+    const METHOD: Method = Method::POST;
+}
+
+pub struct Endpoint<'c, S: EndpointSpec> {
+    client: &'c TorboxClient,
+    _marker: PhantomData<S>,
+}
+
+impl<'c, S: EndpointSpec> Endpoint<'c, S> {
+    pub fn new(client: &'c TorboxClient) -> Self {
+        Self {
+            client,
+            _marker: PhantomData,
+        }
+    }
+
+    pub async fn call_no_body(&self, url_suffix: &str) -> Result<S::Resp, ApiError> {
+        let raw: ApiResponse<S::Resp> = self.client.request(S::METHOD, url_suffix).await?;
+        Self::unwrap_response(raw)
+    }
+
+    /// Full JSON body variant
+    pub async fn call(&self, body: S::Req) -> Result<S::Resp, ApiError> {
+        let raw: ApiResponse<S::Resp> = self
+            .client
+            .request_with_body(S::METHOD, S::PATH, body)
+            .await?;
+        Self::unwrap_response(raw)
+    }
+
+    pub async fn call_query(&self, query: S::Req) -> Result<S::Resp, ApiError>
+    where
+        S::Req: Serialize,
+    {
+        self.client
+            .request_with_query(S::METHOD, S::PATH, &query)
+            .await
+            .map_err(ApiError::from) // map to your own error type
+    }
+
+    fn unwrap_response(raw: ApiResponse<S::Resp>) -> Result<S::Resp, ApiError> {
+        match raw {
+            ApiResponse {
+                success: true,
+                data: Some(ok),
+                ..
+            } => Ok(ok),
+            ApiResponse {
+                success: false,
+                error: Some(e),
+                ..
+            } => Err(ApiError::Failure(e)),
+            _ => Err(ApiError::UnexpectedPayload),
+        }
+    }
+}
 
 #[derive(Clone, Type)]
 pub struct TorboxClient {
@@ -58,6 +127,23 @@ impl TorboxClient {
             .request(method, format!("{}/{}", self.base_url, endpoint))
             .headers(self.headers())
             .json(&body)
+            .send()
+            .await?;
+
+        res.json::<T>().await
+    }
+
+    pub async fn request_with_query<T: DeserializeOwned, Q: Serialize>(
+        &self,
+        method: Method,
+        endpoint: &str,
+        query: &Q,
+    ) -> Result<T, reqwest::Error> {
+        let res = self
+            .client
+            .request(method, format!("{}/{}", self.base_url, endpoint))
+            .headers(self.headers())
+            .query(query)
             .send()
             .await?;
 

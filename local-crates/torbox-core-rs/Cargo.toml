@@ -27,3 +27,4 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
 ] }
 
 reqwest = { version = "0.12.20", features = ["json"] }
+thiserror = "2.0.12"
