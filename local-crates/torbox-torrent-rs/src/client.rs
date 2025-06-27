@@ -49,7 +49,7 @@ impl<'a> TorrentApi<'a> {
     pub async fn list_torrents_with_query(
         &self,
         query: ListTorrentsQuery,
-    ) -> Result<ApiResponse<Vec<TorrentStatus>>, ApiError> {
+    ) -> Result<ApiResponse<Option<Vec<TorrentStatus>>>, ApiError> {
         let endpoint = Endpoint::<ListTorrentsGetEp>::new(self.client);
 
         endpoint.call_query(query).await

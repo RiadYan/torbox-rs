@@ -20,7 +20,7 @@ pub struct ListTorrentsGetEp;
 
 impl EndpointSpec for ListTorrentsGetEp {
     type Req = ListTorrentsQuery; // used as query params
-    type Resp = ApiResponse<Vec<TorrentStatus>>;
+    type Resp = ApiResponse<Option<Vec<TorrentStatus>>>;
     const PATH: &'static str = "api/torrents/mylist";
     const METHOD: Method = Method::GET;
 }

@@ -14,7 +14,7 @@ pub struct TorrentStatus {
     pub size: u64,
     pub active: bool,
     pub auth_id: String,
-    pub download_state: String,
+    pub download_state: TorrentDownloadState,
     pub seeds: u64,
     pub peers: u64,
     pub ratio: f64,
@@ -64,15 +64,19 @@ pub struct TorrentFile {
 
 pub type TorrentMap = HashMap<String, TorrentFile>;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum TorrentDownloadState {
     Downloading,
     Uploading,
+    #[serde(rename = "stalled (no seeds)")]
     Stalled,
     Paused,
     Completed,
     Cached,
+    #[serde(rename = "metaDL")]
     MetaDl,
+    #[serde(rename = "checkingResumeData")]
     CheckingResumeData,
 }

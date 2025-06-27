@@ -52,7 +52,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         self.client
             .request_with_query(S::METHOD, S::PATH, &query)
             .await
-            .map_err(ApiError::from) // map to your own error type
+            .map_err(ApiError::from)
     }
 
     fn unwrap_response(raw: ApiResponse<S::Resp>) -> Result<S::Resp, ApiError> {
