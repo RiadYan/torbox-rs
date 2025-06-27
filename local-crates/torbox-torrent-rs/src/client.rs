@@ -1,16 +1,18 @@
-use reqwest::Method;
 use torbox_core_rs::{
     api::ApiResponse,
-    client::{Endpoint, EndpointSpec, TorboxClient},
-    data::{ApiDataResponse, torrent::TorrentStatus},
+    client::{Endpoint, TorboxClient},
+    data::torrent::TorrentStatus,
     error::ApiError,
 };
 
 use crate::{
     body::{TorrentCreateBody, TorrentInfoBody},
-    endpoint::{ListTorrentsGetEp, TorrentCreateEp, TorrentInfoGetEp, TorrentInfoPostEp},
+    endpoint::{
+        ListTorrentsGetEp, TorrentCreatePostEp, TorrentInfoGetEp, TorrentInfoPostEp,
+        TorrentStatusGetEp,
+    },
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery},
+    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentStatusQuery},
 };
 
 #[cfg_attr(feature = "specta", derive(specta::Type))]
@@ -18,7 +20,7 @@ pub struct TorrentApi<'a> {
     client: &'a TorboxClient,
 }
 
-impl<'a> TorrentApi<'a> {
+impl TorrentApi<'_> {
     /// Creates a torrent under your account. Simply send either a magnet link, or a torrent file.
     ///
     /// Once they have been checked, they will begin downloading assuming your account has available active download slots, and they aren't too large.  
@@ -34,7 +36,7 @@ impl<'a> TorrentApi<'a> {
         &self,
         body: TorrentCreateBody,
     ) -> Result<ApiResponse<TorrentCreatePayload>, ApiError> {
-        Endpoint::<TorrentCreateEp>::new(self.client)
+        Endpoint::<TorrentCreatePostEp>::new(self.client)
             .call(body)
             .await
     }
@@ -51,6 +53,15 @@ impl<'a> TorrentApi<'a> {
         query: ListTorrentsQuery,
     ) -> Result<ApiResponse<Option<Vec<TorrentStatus>>>, ApiError> {
         let endpoint = Endpoint::<ListTorrentsGetEp>::new(self.client);
+
+        endpoint.call_query(query).await
+    }
+
+    pub async fn torrent_status_query(
+        &self,
+        query: TorrentStatusQuery,
+    ) -> Result<ApiResponse<Option<TorrentStatus>>, ApiError> {
+        let endpoint = Endpoint::<TorrentStatusGetEp>::new(self.client);
 
         endpoint.call_query(query).await
     }
@@ -79,7 +90,7 @@ impl<'a> TorrentApi<'a> {
     /// Network / JSON errors → `ApiError::Transport`  
     /// `success == false`     → `ApiError::Failure`  
     /// Unexpected JSON        → `ApiError::UnexpectedPayload`
-    pub async fn get_torrent_info(
+    pub async fn torrent_info_query(
         &self,
         query: TorrentInfoQuery,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {
@@ -103,12 +114,12 @@ impl<'a> TorrentApi<'a> {
     ///
     /// # Arguments
     ///
-    /// * `body` - A [`TorrentInfoByHashBody`] struct containing `hash`, `timeout`, and the source type.
+    /// * `body` - A [`TorrentInfoBody`] struct containing `hash`, `timeout`, and the source type.
     ///
     /// # Returns
     ///
     /// A deserialized `ApiResponse` containing metadata about the torrent.
-    pub async fn get_torrent_info_body(
+    pub async fn torrent_info_body(
         &self,
         body: TorrentInfoBody,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {

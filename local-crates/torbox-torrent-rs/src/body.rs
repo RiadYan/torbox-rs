@@ -105,23 +105,3 @@ pub struct TorrentCreateBody {
     /// This is **bypassed** if user is on free plan, and will process the request as normal in this case. Optional.
     pub queued: Option<bool>,
 }
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "snake_case")]
-#[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct TorrentListBody {
-    /// Allows you to bypass the cached data, and always get fresh information.
-    ///
-    /// Useful if constantly querying for fresh download stats.
-    /// Otherwise, we request that you save our database a few calls.
-    pub bypass_cache_id: bool,
-
-    /// Determines the torrent requested, will return an object rather than list. Optional.
-    pub id: Option<u32>,
-
-    /// Determines the offset of items to get from the database. Default is 0. Optional.
-    pub offset: Option<u32>,
-
-    /// Determines the number of items to recieve per request. Default is 1000. Optional.
-    pub limit: Option<u32>,
-}

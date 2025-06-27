@@ -4,12 +4,12 @@ use torbox_core_rs::{api::ApiResponse, client::EndpointSpec, data::torrent::Torr
 use crate::{
     body::{TorrentCreateBody, TorrentInfoBody},
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery},
+    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentStatusQuery},
 };
 
-pub struct TorrentCreateEp;
+pub struct TorrentCreatePostEp;
 
-impl EndpointSpec for TorrentCreateEp {
+impl EndpointSpec for TorrentCreatePostEp {
     type Req = TorrentCreateBody;
     type Resp = ApiResponse<TorrentCreatePayload>;
     const PATH: &'static str = "api/torrent/create";
@@ -19,8 +19,17 @@ impl EndpointSpec for TorrentCreateEp {
 pub struct ListTorrentsGetEp;
 
 impl EndpointSpec for ListTorrentsGetEp {
-    type Req = ListTorrentsQuery; // used as query params
+    type Req = ListTorrentsQuery;
     type Resp = ApiResponse<Option<Vec<TorrentStatus>>>;
+    const PATH: &'static str = "api/torrents/mylist";
+    const METHOD: Method = Method::GET;
+}
+
+pub struct TorrentStatusGetEp;
+
+impl EndpointSpec for TorrentStatusGetEp {
+    type Req = TorrentStatusQuery;
+    type Resp = ApiResponse<Option<TorrentStatus>>;
     const PATH: &'static str = "api/torrents/mylist";
     const METHOD: Method = Method::GET;
 }
@@ -34,11 +43,9 @@ impl EndpointSpec for TorrentInfoPostEp {
     const METHOD: Method = Method::POST;
 }
 
-/* GET endpoint marker  */
 pub struct TorrentInfoGetEp;
 
 impl EndpointSpec for TorrentInfoGetEp {
-    /// GET uses no JSON body, so `()` (unit) is fine.
     type Req = TorrentInfoQuery;
     type Resp = ApiResponse<TorrentInfoPayload>;
     const PATH: &'static str = "api/torrents/torrentinfo";

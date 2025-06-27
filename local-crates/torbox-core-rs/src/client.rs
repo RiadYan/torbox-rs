@@ -1,15 +1,13 @@
 use std::marker::PhantomData;
 
+use crate::api::ApiResponse;
+use crate::error::ApiError;
 use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
-use specta::Type;
-
-use crate::api::ApiResponse;
-use crate::error::ApiError;
 
 pub trait EndpointSpec {
-    /// JSON body you send
+    /// JSON body you send - Use `()` to not send anything.
     type Req: serde::Serialize;
     /// Typed payload you expect back on success
     type Resp: serde::de::DeserializeOwned;
@@ -72,8 +70,10 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
     }
 }
 
-#[derive(Clone, Type)]
+#[derive(Clone)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorboxClient {
+    /// Client can be specta skipped because TorboxClient should NEVER be used in any frontend, type is only used to be able to derive the APIs built from it.
     #[specta(skip)]
     pub client: Client,
     pub token: String,
