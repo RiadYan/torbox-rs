@@ -1,8 +1,10 @@
 use std::marker::PhantomData;
 
 use crate::api::ApiResponse;
+use crate::body::ToMultipart;
 use crate::error::ApiError;
 use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
+use reqwest::multipart::Form;
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
 
@@ -29,21 +31,17 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         }
     }
 
-    pub async fn call_no_body(&self, url_suffix: &str) -> Result<S::Resp, ApiError> {
-        let raw: ApiResponse<S::Resp> = self.client.request(S::METHOD, url_suffix).await?;
-        Self::unwrap_response(raw)
+    pub async fn call_no_body(&self, url_suffix: &str) -> Result<ApiResponse<S::Resp>, ApiError> {
+        self.client.request(S::METHOD, url_suffix).await
     }
 
-    /// Full JSON body variant
-    pub async fn call(&self, body: S::Req) -> Result<S::Resp, ApiError> {
-        let raw: ApiResponse<S::Resp> = self
-            .client
-            .request_with_body(S::METHOD, S::PATH, body)
-            .await?;
-        Self::unwrap_response(raw)
+    pub async fn call(&self, body: S::Req) -> Result<ApiResponse<S::Resp>, ApiError> {
+        self.client
+            .request_with_json(S::METHOD, S::PATH, body)
+            .await
     }
 
-    pub async fn call_query(&self, query: S::Req) -> Result<S::Resp, ApiError>
+    pub async fn call_query(&self, query: S::Req) -> Result<ApiResponse<S::Resp>, ApiError>
     where
         S::Req: Serialize,
     {
@@ -53,20 +51,15 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
             .map_err(ApiError::from)
     }
 
-    fn unwrap_response(raw: ApiResponse<S::Resp>) -> Result<S::Resp, ApiError> {
-        match raw {
-            ApiResponse {
-                success: true,
-                data: Some(ok),
-                ..
-            } => Ok(ok),
-            ApiResponse {
-                success: false,
-                error: Some(e),
-                ..
-            } => Err(ApiError::Failure(e)),
-            _ => Err(ApiError::UnexpectedPayload),
-        }
+    pub async fn call_multipart(&self, body: S::Req) -> Result<ApiResponse<S::Resp>, ApiError>
+    where
+        S::Req: ToMultipart + Send + Sync,
+    {
+        let form = body.to_multipart().await;
+        println!("form: {:#?}", &form);
+        self.client
+            .request_multipart(S::METHOD, S::PATH, form)
+            .await
     }
 }
 
@@ -90,9 +83,8 @@ impl TorboxClient {
         }
     }
 
-    fn headers(&self) -> HeaderMap {
+    fn headers(&self, content_type: &'static str) -> HeaderMap {
         let mut headers = HeaderMap::new();
-        headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
         headers.insert(
             AUTHORIZATION,
@@ -101,36 +93,67 @@ impl TorboxClient {
         headers
     }
 
+    pub async fn request_multipart<T: DeserializeOwned>(
+        &self,
+        method: Method,
+        endpoint: &str,
+        form: Form,
+    ) -> Result<T, ApiError> {
+        let url = format!("{}/{}", self.base_url, endpoint);
+
+        let res = self
+            .client
+            .request(method, url)
+            .headers(self.headers("multipart/form-data"))
+            .multipart(form)
+            .send()
+            .await?;
+
+        let text = res.text().await?;
+        eprintln!("Raw multipart API response: {}", text);
+
+        let parsed = serde_json::from_str::<T>(&text)?;
+        Ok(parsed)
+    }
+
     pub async fn request<T: DeserializeOwned>(
         &self,
         method: Method,
         endpoint: &str,
-    ) -> Result<T, reqwest::Error> {
+    ) -> Result<T, ApiError> {
+        println!("{}", format!("{}/{}", &self.base_url, &endpoint));
         let res = self
             .client
             .request(method, format!("{}/{}", self.base_url, endpoint))
-            .headers(self.headers())
+            .headers(self.headers("application/json"))
             .send()
             .await?;
 
-        res.json::<T>().await
-    }
+        let text = res.text().await?;
+        eprintln!("Raw API response: {}", text);
 
-    pub async fn request_with_body<T: DeserializeOwned, B: Serialize>(
+        let parsed = serde_json::from_str::<T>(&text)?;
+        Ok(parsed)
+    }
+    pub async fn request_with_json<T: DeserializeOwned, B: Serialize>(
         &self,
         method: Method,
         endpoint: &str,
         body: B,
-    ) -> Result<T, reqwest::Error> {
+    ) -> Result<T, ApiError> {
         let res = self
             .client
             .request(method, format!("{}/{}", self.base_url, endpoint))
-            .headers(self.headers())
+            .headers(self.headers("application/json"))
             .json(&body)
             .send()
             .await?;
 
-        res.json::<T>().await
+        let text = res.text().await?;
+        eprintln!("Raw API response: {}", text);
+
+        let parsed = serde_json::from_str::<T>(&text)?;
+        Ok(parsed)
     }
 
     pub async fn request_with_query<T: DeserializeOwned, Q: Serialize>(
@@ -142,7 +165,7 @@ impl TorboxClient {
         let res = self
             .client
             .request(method, format!("{}/{}", self.base_url, endpoint))
-            .headers(self.headers())
+            .headers(self.headers("application/json"))
             .query(query)
             .send()
             .await?;

@@ -8,10 +8,10 @@ use serde::{Deserialize, Serialize};
 pub struct TorrentStatus {
     pub id: u64,
     pub hash: String,
-    pub created_at: DateTime<FixedOffset>,
-    pub updated_at: DateTime<FixedOffset>,
-    pub magnet: String,
-    pub size: u64,
+    pub created_at: Option<DateTime<FixedOffset>>,
+    pub updated_at: Option<DateTime<FixedOffset>>,
+    pub magnet: Option<String>,
+    pub size: f64,
     pub active: bool,
     pub auth_id: String,
     pub download_state: TorrentDownloadState,
@@ -19,18 +19,18 @@ pub struct TorrentStatus {
     pub peers: u64,
     pub ratio: f64,
     pub progress: f64,
-    pub download_speed: u64,
-    pub upload_speed: u64,
+    pub download_speed: f64,
+    pub upload_speed: f64,
     pub name: String,
-    pub eta: u64,
+    pub eta: f64,
     pub server: u64,
     pub torrent_file: bool,
-    pub expires_at: DateTime<FixedOffset>,
+    pub expires_at: Option<DateTime<FixedOffset>>,
     pub download_present: bool,
     pub download_finished: bool,
     pub files: Vec<TorrentFile>,
-    pub inactive_check: u64,
-    pub availability: u64,
+    pub inactive_check: Option<u64>,
+    pub availability: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -58,7 +58,7 @@ pub struct TorrentData {
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentFile {
     pub name: String,
-    pub size: u64,
+    pub size: f64,
     pub hash: Option<String>,
 }
 
@@ -69,6 +69,7 @@ pub type TorrentMap = HashMap<String, TorrentFile>;
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum TorrentDownloadState {
     Downloading,
+    #[serde(rename = "uploading (no peers)")]
     Uploading,
     #[serde(rename = "stalled (no seeds)")]
     Stalled,

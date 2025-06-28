@@ -1,5 +1,6 @@
 use torbox_core_rs::{
     api::ApiResponse,
+    body::ToMultipart,
     client::{Endpoint, TorboxClient},
     data::torrent::TorrentStatus,
     error::ApiError,
@@ -20,7 +21,11 @@ pub struct TorrentApi<'a> {
     client: &'a TorboxClient,
 }
 
-impl TorrentApi<'_> {
+impl<'a> TorrentApi<'a> {
+    pub fn new(client: &'a TorboxClient) -> Self {
+        Self { client }
+    }
+
     /// Creates a torrent under your account. Simply send either a magnet link, or a torrent file.
     ///
     /// Once they have been checked, they will begin downloading assuming your account has available active download slots, and they aren't too large.  
@@ -37,7 +42,7 @@ impl TorrentApi<'_> {
         body: TorrentCreateBody,
     ) -> Result<ApiResponse<TorrentCreatePayload>, ApiError> {
         Endpoint::<TorrentCreatePostEp>::new(self.client)
-            .call(body)
+            .call_multipart(body)
             .await
     }
 
