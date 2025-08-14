@@ -9,7 +9,7 @@ use crate::data::ApiDataResponse;
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum ApiErrorCode {
-    /// Could not access internal database/memory store information
+    /// Could not access internal database/memory store information, probably due to wrong ID.
     DatabaseError,
 
     /// The reason for the error is unknown. Usually there will be error data attached in the "data" key.
@@ -140,6 +140,9 @@ pub enum ApiErrorCode {
 
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
+    #[error("Redirect error: {0}")]
+    RedirectError(String),
+
     #[error("HTTP error: {0}")]
     Transport(#[from] reqwest::Error),
 

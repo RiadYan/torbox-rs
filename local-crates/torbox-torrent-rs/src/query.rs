@@ -40,7 +40,7 @@ pub struct TorrentStatusQuery {
     ///
     /// Useful if constantly querying for fresh download stats.
     /// Otherwise, we request that you save our database a few calls.
-    pub bypass_cache_id: bool,
+    pub bypass_cache: bool,
 
     /// Determines the torrent requested, will return an object rather than list. Not optional.
     pub id: u32,
@@ -58,4 +58,31 @@ pub struct TorrentInfoQuery {
     ///
     /// Default is 10. Optional.
     pub timeout: Option<u32>,
+}
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct TorrentRequestLinkQuery {
+    /// Hidden and not shown by specta because token is needed for queries here :(
+    #[specta(skip)]
+    pub(crate) token: String,
+
+    /// The torrent's ID that you want to download
+    pub torrent_id: u32,
+
+    /// The files's ID that you want to download.
+    pub file_id: Option<u32>,
+
+    /// If you want a zip link. Required if no file_id. Takes precedence over file_id if both are given.
+    pub zip_link: bool,
+
+    /// The user's IP to determine the closest CDN. Optional.
+    ///
+    /// Preferably check IPv4 if correct first.
+    pub user_ip: Option<String>,
+
+    /// If you want to redirect the user to the CDN link.
+    ///
+    /// This is useful for creating permalinks so that you can just make this request URL the link.
+    pub redirect: bool,
 }

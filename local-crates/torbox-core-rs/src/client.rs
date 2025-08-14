@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use crate::api::ApiResponse;
 use crate::body::ToMultipart;
 use crate::error::ApiError;
-use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
+use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
 use reqwest::multipart::Form;
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
@@ -48,7 +48,6 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         self.client
             .request_with_query(S::METHOD, S::PATH, &query)
             .await
-            .map_err(ApiError::from)
     }
 
     pub async fn call_multipart(&self, body: S::Req) -> Result<ApiResponse<S::Resp>, ApiError>
@@ -56,7 +55,6 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         S::Req: ToMultipart + Send + Sync,
     {
         let form = body.to_multipart().await;
-        println!("form: {:#?}", &form);
         self.client
             .request_multipart(S::METHOD, S::PATH, form)
             .await
@@ -69,21 +67,26 @@ pub struct TorboxClient {
     /// Client can be specta skipped because TorboxClient should NEVER be used in any frontend, type is only used to be able to derive the APIs built from it.
     #[specta(skip)]
     pub client: Client,
-    pub token: String,
+    pub(crate) token: String,
     pub base_url: String,
 }
 
 impl TorboxClient {
     pub fn new(token: String) -> Self {
-        let client = Client::new();
+        let client = Client::builder()
+            .redirect(reqwest::redirect::Policy::none())
+            .build()
+            .unwrap();
         Self {
             client,
             token,
             base_url: "https://api.torbox.app/v1".to_string(),
         }
     }
-
-    fn headers(&self, content_type: &'static str) -> HeaderMap {
+    pub fn token(&self) -> &str {
+        &self.token
+    }
+    fn headers(&self, _content_type: &'static str) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
         headers.insert(
@@ -110,7 +113,6 @@ impl TorboxClient {
             .await?;
 
         let text = res.text().await?;
-        eprintln!("Raw multipart API response: {}", text);
 
         let parsed = serde_json::from_str::<T>(&text)?;
         Ok(parsed)
@@ -121,7 +123,6 @@ impl TorboxClient {
         method: Method,
         endpoint: &str,
     ) -> Result<T, ApiError> {
-        println!("{}", format!("{}/{}", &self.base_url, &endpoint));
         let res = self
             .client
             .request(method, format!("{}/{}", self.base_url, endpoint))
@@ -130,7 +131,6 @@ impl TorboxClient {
             .await?;
 
         let text = res.text().await?;
-        eprintln!("Raw API response: {}", text);
 
         let parsed = serde_json::from_str::<T>(&text)?;
         Ok(parsed)
@@ -150,7 +150,6 @@ impl TorboxClient {
             .await?;
 
         let text = res.text().await?;
-        eprintln!("Raw API response: {}", text);
 
         let parsed = serde_json::from_str::<T>(&text)?;
         Ok(parsed)
@@ -161,7 +160,7 @@ impl TorboxClient {
         method: Method,
         endpoint: &str,
         query: &Q,
-    ) -> Result<T, reqwest::Error> {
+    ) -> Result<T, ApiError> {
         let res = self
             .client
             .request(method, format!("{}/{}", self.base_url, endpoint))
@@ -170,6 +169,9 @@ impl TorboxClient {
             .send()
             .await?;
 
-        res.json::<T>().await
+        let text = res.text().await?;
+
+        let parsed = serde_json::from_str::<T>(&text)?;
+        Ok(parsed)
     }
 }

@@ -76,6 +76,25 @@ impl TorrentInfoBody {
     }
 }
 
+#[async_trait]
+impl ToMultipart for TorrentInfoBody {
+    async fn to_multipart(self) -> Form {
+        let mut form = Form::new();
+
+        if let Some(hash) = self.hash {
+            form = form.text("hash", hash);
+        } else if let Some(magnet) = self.magnet {
+            form = form.text("magnet", magnet);
+        } else if let Some(file) = self.file {
+            form = form.text("file", file);
+        }
+
+        form = form.text("timeout", self.timeout.to_string());
+
+        form
+    }
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
@@ -106,12 +125,10 @@ pub struct TorrentCreateBody {
 #[async_trait]
 impl ToMultipart for TorrentCreateBody {
     async fn to_multipart(self) -> Form {
-        println!("body: {:#?}", &self);
         let mut form = Form::new();
 
         match self.source {
             TorrentSource::Magnet(magnet) => {
-                println!("Attaching magnet: {}", magnet);
                 form = form.text("magnet", magnet.to_string());
             }
             TorrentSource::File(file_path) => {
@@ -140,7 +157,7 @@ impl ToMultipart for TorrentCreateBody {
 pub struct TorrentControlBody {
     // Torrent ID or All
     #[serde(flatten)]
-    source: TorrentControlSource,
+    pub source: TorrentControlSource,
     // the operation you want to perform on the torrent
-    operation: TorrentOperation,
+    pub operation: TorrentOperation,
 }

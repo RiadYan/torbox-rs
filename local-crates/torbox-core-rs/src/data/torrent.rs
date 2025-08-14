@@ -67,17 +67,81 @@ pub type TorrentMap = HashMap<String, TorrentFile>;
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
+/// All possible states of a torrent.
+///
+/// Here is where I got the comments for each variant : `https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#torrent-management`
 pub enum TorrentDownloadState {
-    Downloading,
-    #[serde(rename = "uploading (no peers)")]
+    // Error states
+    /// Some error occurred, applies to paused torrents
+    Error,
+    /// Torrent data files is missing
+    MissingFiles,
+
+    // Uploading states
+    /// Torrent is being seeded and data is being transferred
     Uploading,
-    #[serde(rename = "stalled (no seeds)")]
-    Stalled,
-    Paused,
-    Completed,
-    Cached,
+    /// Torrent is being seeded, but no connection were made
+    #[serde(rename = "uploading (no peers)", alias = "stalledUP")]
+    UploadingNoPeers,
+    /// Torrent is paused and has finished downloading
+    #[serde(rename = "pausedUP")]
+    PausedUploading,
+    /// Queuing is enabled and torrent is queued for upload
+    #[serde(rename = "queuedUP")]
+    QueuedUploading,
+    /// Torrent has finished downloading and is being checked
+    #[serde(rename = "checkingUP")]
+    CheckingUploading,
+    /// Torrent is forced to uploading and ignore queue limit
+    #[serde(rename = "forcedUP")]
+    ForcedUploading,
+
+    // Downloading states
+    /// Torrent is being downloaded and data is being transferred
+    Downloading,
+    /// Torrent has just started downloading and is fetching metadata
     #[serde(rename = "metaDL")]
     MetaDl,
+    /// Torrent is paused and has NOT finished downloading
+    #[serde(rename = "pausedDL")]
+    PausedDownloading,
+    /// Queuing is enabled and torrent is queued for download
+    #[serde(rename = "queuedDL")]
+    QueuedDownloading,
+    /// Torrent is being downloaded, but no connection were made
+    #[serde(rename = "stalledDL")]
+    StalledDownloading,
+    /// Same as checkingUP, but torrent has NOT finished downloading
+    #[serde(rename = "checkingDL")]
+    CheckingDownloading,
+    /// Torrent is forced to downloading to ignore queue limit
+    #[serde(rename = "forcedDL")]
+    ForcedDownloading,
+
+    // Other states
+    /// Torrent is allocating disk space for download
+    Allocating,
+    /// Checking resume data on qBt startup
     #[serde(rename = "checkingResumeData")]
     CheckingResumeData,
+    /// Torrent is moving to another location
+    Moving,
+    /// Unknown status
+    Unknown,
+
+    // Completion states
+    /// Torrent has completed downloading
+    Completed,
+    /// Torrent has expired (no longer active)
+    Expired,
+    /// Torrent is cached
+    Cached,
+
+    // Legacy/alias states (for backward compatibility)
+    /// Torrent is stalled with no seeds (legacy name)
+    #[serde(rename = "stalled (no seeds)", alias = "stalled")]
+    StalledNoSeeds,
+    /// Torrent is paused (generic paused state)
+    #[serde(alias = "paused")]
+    Paused,
 }

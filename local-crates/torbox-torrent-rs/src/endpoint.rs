@@ -1,10 +1,11 @@
 use reqwest::Method;
-use torbox_core_rs::{api::ApiResponse, client::EndpointSpec, data::torrent::TorrentStatus};
+use torbox_core_rs::{client::EndpointSpec, data::torrent::TorrentStatus};
 
 use crate::{
     body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentStatusQuery},
+    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
+    types::TorrentDownloadResponse,
 };
 
 pub struct TorrentCreatePostEp;
@@ -56,7 +57,16 @@ pub struct TorrentControlPostEp;
 
 impl EndpointSpec for TorrentControlPostEp {
     type Req = TorrentControlBody;
-    type Resp = ApiResponse<()>;
+    type Resp = ();
     const PATH: &'static str = "api/torrents/controltorrent";
     const METHOD: Method = Method::POST;
+}
+
+pub struct TorrentRequestLinkGetEp;
+
+impl EndpointSpec for TorrentRequestLinkGetEp {
+    type Req = TorrentRequestLinkQuery;
+    type Resp = TorrentDownloadResponse;
+    const PATH: &'static str = "api/torrents/requestdl";
+    const METHOD: Method = Method::GET;
 }

@@ -1,19 +1,19 @@
 use torbox_core_rs::{
     api::ApiResponse,
-    body::ToMultipart,
-    client::{Endpoint, TorboxClient},
+    client::{Endpoint, EndpointSpec, TorboxClient},
     data::torrent::TorrentStatus,
     error::ApiError,
 };
 
 use crate::{
-    body::{TorrentCreateBody, TorrentInfoBody},
+    body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
     endpoint::{
-        ListTorrentsGetEp, TorrentCreatePostEp, TorrentInfoGetEp, TorrentInfoPostEp,
-        TorrentStatusGetEp,
+        ListTorrentsGetEp, TorrentControlPostEp, TorrentCreatePostEp, TorrentInfoGetEp,
+        TorrentInfoPostEp, TorrentRequestLinkGetEp, TorrentStatusGetEp,
     },
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentStatusQuery},
+    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
+    types::TorrentDownloadResponse,
 };
 
 #[cfg_attr(feature = "specta", derive(specta::Type))]
@@ -24,6 +24,10 @@ pub struct TorrentApi<'a> {
 impl<'a> TorrentApi<'a> {
     pub fn new(client: &'a TorboxClient) -> Self {
         Self { client }
+    }
+
+    pub(crate) fn token(&self) -> &str {
+        self.client.token()
     }
 
     /// Creates a torrent under your account. Simply send either a magnet link, or a torrent file.
@@ -53,7 +57,7 @@ impl<'a> TorrentApi<'a> {
     /// # Returns
     ///
     /// A deserialized `ApiResponse` containing the list of torrents.
-    pub async fn list_torrents_with_query(
+    pub async fn list_torrents_query(
         &self,
         query: ListTorrentsQuery,
     ) -> Result<ApiResponse<Option<Vec<TorrentStatus>>>, ApiError> {
@@ -62,7 +66,7 @@ impl<'a> TorrentApi<'a> {
         endpoint.call_query(query).await
     }
 
-    pub async fn torrent_status_query(
+    pub async fn status_query(
         &self,
         query: TorrentStatusQuery,
     ) -> Result<ApiResponse<Option<TorrentStatus>>, ApiError> {
@@ -95,7 +99,7 @@ impl<'a> TorrentApi<'a> {
     /// Network / JSON errors → `ApiError::Transport`  
     /// `success == false`     → `ApiError::Failure`  
     /// Unexpected JSON        → `ApiError::UnexpectedPayload`
-    pub async fn torrent_info_query(
+    pub async fn info_query(
         &self,
         query: TorrentInfoQuery,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {
@@ -124,11 +128,50 @@ impl<'a> TorrentApi<'a> {
     /// # Returns
     ///
     /// A deserialized `ApiResponse` containing metadata about the torrent.
-    pub async fn torrent_info_body(
+    pub async fn info_body(
         &self,
         body: TorrentInfoBody,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {
         Endpoint::<TorrentInfoPostEp>::new(self.client)
+            .call_multipart(body)
+            .await
+    }
+
+    pub async fn request_download_link(
+        &self,
+        query: TorrentRequestLinkQuery,
+    ) -> Result<TorrentDownloadResponse, ApiError> {
+        let endpoint = format!("{}/{}", self.client.base_url, TorrentRequestLinkGetEp::PATH);
+        let request = self.client.client.get(&endpoint).query(&query);
+
+        let response = request.send().await?;
+
+        if query.redirect {
+            if response.status().is_redirection() {
+                let location = response
+                    .headers()
+                    .get("Location")
+                    .ok_or(ApiError::RedirectError("Missing Location header".into()))?
+                    .to_str()
+                    .map_err(|_| ApiError::RedirectError("Invalid Location header".into()))?;
+
+                Ok(TorrentDownloadResponse::Redirect(location.to_string()))
+            } else {
+                match response.json::<ApiResponse<String>>().await {
+                    Ok(json) => Ok(TorrentDownloadResponse::Json(json)),
+                    Err(_) => Err(ApiError::UnexpectedPayload),
+                }
+            }
+        } else {
+            let json = response.json::<ApiResponse<String>>().await?;
+            Ok(TorrentDownloadResponse::Json(json))
+        }
+    }
+    pub async fn control_torrent(
+        &self,
+        body: TorrentControlBody,
+    ) -> Result<ApiResponse<()>, ApiError> {
+        Endpoint::<TorrentControlPostEp>::new(self.client)
             .call(body)
             .await
     }

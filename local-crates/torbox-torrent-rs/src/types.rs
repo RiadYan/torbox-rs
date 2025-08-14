@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
+use torbox_core_rs::api::ApiResponse;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -11,6 +12,7 @@ pub enum TorrentSource {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum TorrentOperation {
     /// Reannounces the torrent to get new peers
@@ -29,4 +31,10 @@ pub enum TorrentControlSource {
     TorrentId(u32),
     /// if you want to do this operation to all torrents in your account, optional if using the "torrent_id" parameter
     All(bool),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum TorrentDownloadResponse {
+    Json(ApiResponse<String>),
+    Redirect(String),
 }
