@@ -66,7 +66,7 @@ pub struct TorrentInfoQuery {
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentRequestLinkQuery {
     /// Hidden and not shown by specta because token is needed for queries here :(
-    #[specta(skip)]
+    #[cfg_attr(feature = "specta", specta(skip))]
     pub(crate) token: String,
 
     /// The torrent's ID that you want to download

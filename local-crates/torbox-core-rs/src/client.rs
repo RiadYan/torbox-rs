@@ -88,7 +88,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorboxClient {
     /// Client can be specta skipped because TorboxClient should NEVER be used in any frontend, type is only used to be able to derive the APIs built from it.
-    #[specta(skip)]
+    #[cfg_attr(feature = "specta", specta(skip))]
     pub client: Client,
     pub(crate) token: String,
     pub base_url: String,
