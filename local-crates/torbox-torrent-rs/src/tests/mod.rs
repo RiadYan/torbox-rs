@@ -3,8 +3,8 @@ mod torrent_test {
     use std::env;
 
     use crate::{
+        TorrentApi,
         body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
-        client::TorrentApi,
         query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
         types::{TorrentDownloadResponse, TorrentSource},
     };
