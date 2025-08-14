@@ -4,8 +4,11 @@ use torbox_core_rs::{client::EndpointSpec, data::torrent::TorrentStatus};
 use crate::{
     body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
-    types::TorrentDownloadResponse,
+    query::{
+        ListTorrentsQuery, TorrentExportDataQuery, TorrentInfoQuery, TorrentRequestLinkQuery,
+        TorrentStatusQuery,
+    },
+    types::{TorrentDownloadResponse, TorrentExportResponse, TorrentSource},
 };
 
 pub struct TorrentCreatePostEp;
@@ -68,5 +71,14 @@ impl EndpointSpec for TorrentRequestLinkGetEp {
     type Req = TorrentRequestLinkQuery;
     type Resp = TorrentDownloadResponse;
     const PATH: &'static str = "api/torrents/requestdl";
+    const METHOD: Method = Method::GET;
+}
+
+pub struct TorrentExportDataGetEp;
+
+impl EndpointSpec for TorrentExportDataGetEp {
+    type Req = TorrentExportDataQuery;
+    type Resp = String; // to String since we're getting magnet links in JSON maybe idk
+    const PATH: &'static str = "api/torrents/exportdata";
     const METHOD: Method = Method::GET;
 }

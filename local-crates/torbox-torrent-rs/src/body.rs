@@ -1,9 +1,9 @@
 use async_trait::async_trait;
-use reqwest::multipart::Form;
+use reqwest::multipart::{Form, Part};
 use serde::Serialize;
 use torbox_core_rs::body::ToMultipart;
 
-use crate::types::{TorrentControlSource, TorrentOperation, TorrentSource};
+use crate::types::{TorrentControlSource, TorrentExportType, TorrentOperation, TorrentSource};
 
 /// Request body for retrieving torrent information from TorBox.
 ///
@@ -121,7 +121,6 @@ pub struct TorrentCreateBody {
     /// This is **bypassed** if user is on free plan, and will process the request as normal in this case. Optional.
     pub as_queued: Option<bool>,
 }
-
 #[async_trait]
 impl ToMultipart for TorrentCreateBody {
     async fn to_multipart(self) -> Form {
@@ -129,21 +128,28 @@ impl ToMultipart for TorrentCreateBody {
 
         match self.source {
             TorrentSource::Magnet(magnet) => {
-                form = form.text("magnet", magnet.to_string());
+                form = form.text("magnet", magnet);
             }
-            TorrentSource::File(file_path) => {
-                form = form.file("file", file_path).await.unwrap();
+            TorrentSource::File(bytes) => {
+                let part = Part::bytes(bytes)
+                    .file_name("torrent_file.torrent")
+                    .mime_str("application/x-bittorrent")
+                    .unwrap();
+
+                form = form.part("file", part);
             }
         }
 
         if let Some(seed) = self.seed {
             form = form.text("seed", seed.to_string());
         }
+
         form = form.text("allow_zip", self.allow_zip.to_string());
 
         if let Some(name) = self.name {
             form = form.text("name", name);
         }
+
         if let Some(queued) = self.as_queued {
             form = form.text("queued", queued.to_string());
         }

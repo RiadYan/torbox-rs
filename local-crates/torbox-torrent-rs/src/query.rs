@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::types::TorrentExportType;
+
 /// `id` param isn't given because if it is, it will return an Object and not a Vec
 ///
 /// Please use TorrentStatusQuery instead
@@ -85,4 +87,15 @@ pub struct TorrentRequestLinkQuery {
     ///
     /// This is useful for creating permalinks so that you can just make this request URL the link.
     pub redirect: bool,
+}
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct TorrentExportDataQuery {
+    pub torrent_id: u32,
+    /// Either "magnet" or "file". Tells how the API what to get, and what to respond as.
+    ///
+    /// If magnet, it returns a JSON response with the magnet as a string in the data key. If file, it responds with a torrent file download.
+    #[serde(rename = "type")]
+    pub data_type: TorrentExportType,
 }

@@ -5,8 +5,11 @@ mod torrent_test {
     use crate::{
         TorrentApi,
         body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
-        query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
-        types::{TorrentDownloadResponse, TorrentSource},
+        query::{
+            ListTorrentsQuery, TorrentExportDataQuery, TorrentInfoQuery, TorrentRequestLinkQuery,
+            TorrentStatusQuery,
+        },
+        types::{TorrentDownloadResponse, TorrentExportResponse, TorrentExportType, TorrentSource},
     };
 
     use dotenvy::from_filename;
@@ -215,7 +218,49 @@ mod torrent_test {
             }
         }
     }
-    /// WARNING: Keep as last
+
+    #[tokio::test]
+    async fn test_torrent_export_data_query_magnet_success() {
+        let client = test_client();
+        let api = TorrentApi::new(&client);
+
+        let query = TorrentExportDataQuery {
+            torrent_id: get_first_torrent_id().await,
+            data_type: TorrentExportType::Magnet,
+        };
+
+        match api.export_data_query(query).await {
+            Ok(TorrentExportResponse::Json(response)) => {
+                println!("Magnet URI: {:?}", response.data);
+                assert!(response.success);
+                assert!(response.data.unwrap().starts_with("magnet:"));
+            }
+            Ok(_) => panic!("Expected JSON response but got file"),
+            Err(e) => panic!("API call failed: {:?}", e),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_torrent_export_data_query_file_success() {
+        let client = test_client();
+        let api = TorrentApi::new(&client);
+
+        let query = TorrentExportDataQuery {
+            torrent_id: get_first_torrent_id().await,
+            data_type: TorrentExportType::File,
+        };
+
+        match api.export_data_query(query).await {
+            Ok(TorrentExportResponse::File(data)) => {
+                println!("Received file with {} bytes", data.len());
+                assert!(!data.is_empty());
+                assert!(data.starts_with(b"d8:announce")); // Basic torrent file validation
+            }
+            Ok(_) => panic!("Expected file response but got JSON"),
+            Err(e) => panic!("API call failed: {:?}", e),
+        }
+    }
+
     #[tokio::test]
     async fn test_torrent_control_success() {
         let client = test_client();
@@ -223,7 +268,7 @@ mod torrent_test {
 
         let body = TorrentControlBody {
             source: crate::types::TorrentControlSource::TorrentId(get_first_torrent_id().await),
-            operation: crate::types::TorrentOperation::Delete,
+            operation: crate::types::TorrentOperation::Resume,
         };
         let result = api.control_torrent(body).await;
         match result {

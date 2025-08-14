@@ -5,3 +5,4 @@ pub mod data;
 pub mod error;
 pub mod network;
 mod tests;
+pub mod traits;

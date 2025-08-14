@@ -15,12 +15,15 @@ use torbox_core_rs::{
 use crate::{
     body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
     endpoint::{
-        ListTorrentsGetEp, TorrentControlPostEp, TorrentCreatePostEp, TorrentInfoGetEp,
-        TorrentInfoPostEp, TorrentRequestLinkGetEp, TorrentStatusGetEp,
+        ListTorrentsGetEp, TorrentControlPostEp, TorrentCreatePostEp, TorrentExportDataGetEp,
+        TorrentInfoGetEp, TorrentInfoPostEp, TorrentRequestLinkGetEp, TorrentStatusGetEp,
     },
     payload::{TorrentCreatePayload, TorrentInfoPayload},
-    query::{ListTorrentsQuery, TorrentInfoQuery, TorrentRequestLinkQuery, TorrentStatusQuery},
-    types::TorrentDownloadResponse,
+    query::{
+        ListTorrentsQuery, TorrentExportDataQuery, TorrentInfoQuery, TorrentRequestLinkQuery,
+        TorrentStatusQuery,
+    },
+    types::{TorrentDownloadResponse, TorrentExportResponse, TorrentExportType, TorrentSource},
 };
 
 /// Main interface for TorBox torrent operations
@@ -222,5 +225,28 @@ impl<'a> TorrentApi<'a> {
         Endpoint::<TorrentControlPostEp>::new(self.client)
             .call(body)
             .await
+    }
+
+    /// Exports the magnet or torrent file.
+    ///
+    /// Requires a type to be passed. If type is magnet, it will return a JSON response with the magnet as a string in the data key.
+    ///
+    ///  If type is file, it will return a bittorrent file as a download. Not compatible with cached downloads.
+    pub async fn export_data_query(
+        &self,
+        query: TorrentExportDataQuery,
+    ) -> Result<TorrentExportResponse, ApiError> {
+        let endpoint = Endpoint::<TorrentExportDataGetEp>::new(self.client);
+
+        match query.data_type {
+            TorrentExportType::File => {
+                let bytes = endpoint.call_query_raw(query).await?;
+                Ok(TorrentExportResponse::File(bytes))
+            }
+            TorrentExportType::Magnet => {
+                let response: ApiResponse<String> = endpoint.call_query(query).await?;
+                Ok(TorrentExportResponse::Json(response))
+            }
+        }
     }
 }

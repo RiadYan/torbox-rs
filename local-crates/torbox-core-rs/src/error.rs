@@ -157,6 +157,37 @@ pub enum ApiError {
 
     #[error("Unexpected Payload variant")]
     UnexpectedPayload,
+
+    #[error("UTF8 encoding/decoding error: {0:?}")]
+    Utf8(std::string::FromUtf8Error),
+
+    #[error("Unknown variant: {0:?}")]
+    Custom(String),
+}
+
+impl From<std::string::FromUtf8Error> for ApiError {
+    fn from(err: std::string::FromUtf8Error) -> Self {
+        ApiError::Utf8(err)
+    }
+}
+
+impl Serialize for ApiError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for ApiError {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Ok(ApiError::Custom(s))
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,9 +1,11 @@
+use std::any::TypeId;
 use std::marker::PhantomData;
 
 use crate::api::ApiResponse;
 use crate::body::ToMultipart;
 use crate::error::ApiError;
-use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
+use crate::traits::FromBytes;
+use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use reqwest::multipart::Form;
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
@@ -31,7 +33,11 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         }
     }
 
-    pub async fn call_no_body(&self, url_suffix: &str) -> Result<ApiResponse<S::Resp>, ApiError> {
+    pub async fn call_no_body(&self, url_suffix: &str) -> Result<ApiResponse<S::Resp>, ApiError>
+    where
+        S::Resp:,
+        <S as EndpointSpec>::Resp: std::fmt::Debug,
+    {
         self.client.request(S::METHOD, url_suffix).await
     }
 
@@ -59,6 +65,23 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
             .request_multipart(S::METHOD, S::PATH, form)
             .await
     }
+
+    pub async fn call_query_raw(&self, query: S::Req) -> Result<Vec<u8>, ApiError>
+    where
+        S::Req: Serialize,
+    {
+        let url = format!("{}/{}", self.client.base_url, S::PATH);
+        let response = self
+            .client
+            .client
+            .request(S::METHOD, &url)
+            .headers(self.client.headers("application/json"))
+            .query(&query)
+            .send()
+            .await?;
+
+        Ok(response.bytes().await?.to_vec())
+    }
 }
 
 #[derive(Clone)]
@@ -83,9 +106,31 @@ impl TorboxClient {
             base_url: "https://api.torbox.app/v1".to_string(),
         }
     }
+
     pub fn token(&self) -> &str {
         &self.token
     }
+
+    async fn parse_response<T>(&self, res: reqwest::Response) -> Result<T, ApiError>
+    where
+        T: DeserializeOwned + FromBytes,
+    {
+        let content_type = res
+            .headers()
+            .get(reqwest::header::CONTENT_TYPE)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("");
+
+        if content_type.starts_with("application/json") {
+            let text = res.text().await?;
+            serde_json::from_str::<T>(&text).map_err(ApiError::from)
+        } else {
+            // Handle binary responses
+            let bytes = res.bytes().await?.to_vec();
+            T::from_bytes(bytes)
+        }
+    }
+
     fn headers(&self, _content_type: &'static str) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
@@ -118,7 +163,7 @@ impl TorboxClient {
         Ok(parsed)
     }
 
-    pub async fn request<T: DeserializeOwned>(
+    pub async fn request<T: DeserializeOwned + FromBytes>(
         &self,
         method: Method,
         endpoint: &str,
@@ -130,11 +175,9 @@ impl TorboxClient {
             .send()
             .await?;
 
-        let text = res.text().await?;
-
-        let parsed = serde_json::from_str::<T>(&text)?;
-        Ok(parsed)
+        self.parse_response::<T>(res).await
     }
+
     pub async fn request_with_json<T: DeserializeOwned, B: Serialize>(
         &self,
         method: Method,
@@ -170,6 +213,7 @@ impl TorboxClient {
             .await?;
 
         let text = res.text().await?;
+        // eprintln!("Raw API response: {}", text);
 
         let parsed = serde_json::from_str::<T>(&text)?;
         Ok(parsed)

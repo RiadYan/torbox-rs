@@ -1281,6 +1281,7 @@ name = "torbox-core-rs"
 version = "0.0.1-alpha.2"
 dependencies = [
  "async-trait",
+ "base64",
  "chrono",
  "dotenvy",
  "reqwest",
@@ -1314,6 +1315,7 @@ name = "torbox-torrent-rs"
 version = "0.0.1-alpha.1"
 dependencies = [
  "async-trait",
+ "base64",
  "dotenvy",
  "reqwest",
  "serde",
