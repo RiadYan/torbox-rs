@@ -23,6 +23,12 @@ use crate::{
     types::TorrentDownloadResponse,
 };
 
+/// Main interface for TorBox torrent operations
+///
+/// Provides methods for all torrent-related API calls including:
+/// - Torrent creation and management
+/// - Status and metadata retrieval
+/// - Download link generation
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct TorrentApi<'a> {
     client: &'a TorboxClient,
@@ -37,17 +43,18 @@ impl<'a> TorrentApi<'a> {
         self.client.token()
     }
 
-    /// Creates a torrent under your account. Simply send either a magnet link, or a torrent file.
+    /// Creates a torrent under your account
     ///
-    /// Once they have been checked, they will begin downloading assuming your account has available active download slots, and they aren't too large.  
+    /// Accepts either a magnet link or torrent file. The torrent will begin downloading
+    /// once verified, assuming your account has available download slots.
     ///
     /// # Arguments
     ///
-    /// * `body` - The payload containing either a magnet link or file path and optional features.
+    /// * `body` - Contains either a magnet link or file path with optional parameters
     ///
     /// # Returns
     ///
-    /// A deserialized `ApiResponse` with the result of the torrent creation.
+    /// An `ApiResponse` with the torrent creation result
     pub async fn create_torrent(
         &self,
         body: TorrentCreateBody,
@@ -73,6 +80,15 @@ impl<'a> TorrentApi<'a> {
         endpoint.call_query(query).await
     }
 
+    /// Gets detailed status for a specific torrent
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - Contains the torrent ID and cache bypass option
+    ///
+    /// # Returns
+    ///
+    /// An `ApiResponse` with the torrent's current status
     pub async fn status_query(
         &self,
         query: TorrentStatusQuery,
@@ -144,6 +160,21 @@ impl<'a> TorrentApi<'a> {
             .await
     }
 
+    /// Requests a download link for a torrent
+    ///
+    /// Links are valid for 3 hours. Once downloading starts, the transfer
+    /// can continue indefinitely. Permalinks can and should be created by setting
+    /// `redirect=true`.
+    ///
+    /// Setting `redirect = true` truly helps torbox servers not to be overwhelmed.
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - Contains torrent ID and download options
+    ///
+    /// # Returns
+    ///
+    /// Either a JSON response or redirect URL
     pub async fn request_download_link(
         &self,
         query: TorrentRequestLinkQuery,
@@ -174,6 +205,16 @@ impl<'a> TorrentApi<'a> {
             Ok(TorrentDownloadResponse::Json(json))
         }
     }
+
+    /// Controls torrent state (start, stop, delete, etc.)
+    ///
+    /// # Arguments
+    ///
+    /// * `body` - Contains the torrent source and operation to perform
+    ///
+    /// # Returns
+    ///
+    /// An empty `ApiResponse` on success
     pub async fn control_torrent(
         &self,
         body: TorrentControlBody,

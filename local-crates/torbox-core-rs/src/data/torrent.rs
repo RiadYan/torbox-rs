@@ -69,7 +69,7 @@ pub type TorrentMap = HashMap<String, TorrentFile>;
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 /// All possible states of a torrent.
 ///
-/// Here is where I got the comments for each variant : `https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#torrent-management`
+/// Here is where I got the comments for each variant : https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#torrent-management
 pub enum TorrentDownloadState {
     // Error states
     /// Some error occurred, applies to paused torrents
