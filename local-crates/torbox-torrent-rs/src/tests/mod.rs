@@ -100,7 +100,7 @@ mod torrent_test {
 
         match result {
             Ok(response) => {
-                println!("Success: {:?}", response.data.unwrap().unwrap()[0].name);
+                println!("Success: {:?}", response);
                 assert!(response.success, "API responded with success = false");
             }
             Err(e) => {
@@ -254,7 +254,7 @@ mod torrent_test {
             Ok(TorrentExportResponse::File(data)) => {
                 println!("Received file with {} bytes", data.len());
                 assert!(!data.is_empty());
-                assert!(data.starts_with(b"d8:announce")); // Basic torrent file validation
+                assert!(data.starts_with(b"d8:announce")); // torrent file validation
             }
             Ok(_) => panic!("Expected file response but got JSON"),
             Err(e) => panic!("API call failed: {:?}", e),

@@ -1,6 +1,6 @@
 [package]
 name = "torbox-rs"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 edition = "2024"
 description = "Rust SDK for the Torbox API"
 license = "MIT"
@@ -24,13 +24,13 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "serde_json",
     "derive",
 ] }
-torbox-core-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-core-rs", features = [
+torbox-core-rs = { version = "0.0.1-alpha.3", path = "local-crates/torbox-core-rs", features = [
     "specta",
 ] }
-torbox-ddl-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-ddl-rs", features = [
+torbox-ddl-rs = { version = "0.0.1-alpha.2", path = "local-crates/torbox-ddl-rs", features = [
     "specta",
 ] }
-torbox-torrent-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-torrent-rs", features = [
+torbox-torrent-rs = { version = "0.0.1-alpha.2", path = "local-crates/torbox-torrent-rs", features = [
     "specta",
 ] }
 
