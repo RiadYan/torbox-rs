@@ -1,7 +1,7 @@
 use torbox_core_rs::{
     api::ApiResponse,
     client::{Endpoint, TorboxClient},
-    data::user::UserProfile,
+    data::user::{SessionToken, UserProfile},
     error::ApiError,
 };
 
@@ -53,10 +53,15 @@ impl<'a> UserApi<'a> {
             .await
     }
 
-    pub async fn refresh_api_token(&self) -> Result<ApiResponse<String>, ApiError> {
+    /// Not done
+    pub(crate) async fn refresh_api_token(
+        &self,
+        token: String,
+        expires_at: u64,
+    ) -> Result<ApiResponse<String>, ApiError> {
         Endpoint::<RefreshApiToken>::new(self.client)
             .call(RefreshApiTokenBody {
-                session_token: self.client.token().to_string(),
+                session_token: SessionToken { token, expires_at },
             })
             .await
     }

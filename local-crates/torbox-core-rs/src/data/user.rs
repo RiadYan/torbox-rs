@@ -55,3 +55,10 @@ pub struct Job {
     pub download_url: Option<String>,
     pub status: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct SessionToken {
+    pub token: String,
+    pub expires_at: u64,
+}
