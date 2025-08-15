@@ -1320,6 +1320,7 @@ dependencies = [
  "specta",
  "torbox-core-rs",
  "torbox-ddl-rs",
+ "torbox-general-rs",
  "torbox-torrent-rs",
 ]
 
@@ -1334,6 +1335,19 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
+ "specta",
+ "tokio",
+ "torbox-core-rs",
+]
+
+[[package]]
+name = "torbox-user-rs"
+version = "0.0.1-alpha.1"
+dependencies = [
+ "dotenvy",
+ "reqwest",
+ "serde",
+ "serde_json",
  "specta",
  "tokio",
  "torbox-core-rs",

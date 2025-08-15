@@ -78,9 +78,9 @@ impl<'a> TorrentApi<'a> {
         &self,
         query: ListTorrentsQuery,
     ) -> Result<ApiResponse<Option<Vec<TorrentStatus>>>, ApiError> {
-        let endpoint = Endpoint::<ListTorrentsGetEp>::new(self.client);
-
-        endpoint.call_query(query).await
+        Endpoint::<ListTorrentsGetEp>::new(self.client)
+            .call_query(query)
+            .await
     }
 
     /// Gets detailed status for a specific torrent
@@ -94,11 +94,12 @@ impl<'a> TorrentApi<'a> {
     /// An `ApiResponse` with the torrent's current status
     pub async fn status_query(
         &self,
-        query: TorrentStatusQuery,
+        bypass_cache: bool,
+        id: u32,
     ) -> Result<ApiResponse<Option<TorrentStatus>>, ApiError> {
-        let endpoint = Endpoint::<TorrentStatusGetEp>::new(self.client);
-
-        endpoint.call_query(query).await
+        Endpoint::<TorrentStatusGetEp>::new(self.client)
+            .call_query(TorrentStatusQuery { bypass_cache, id })
+            .await
     }
 
     /// Fetches torrent metadata using a GET request with query parameters.
@@ -127,10 +128,11 @@ impl<'a> TorrentApi<'a> {
     /// Unexpected JSON        → `ApiError::UnexpectedPayload`
     pub async fn info_query(
         &self,
-        query: TorrentInfoQuery,
+        hash: String,
+        timeout: Option<u32>,
     ) -> Result<ApiResponse<TorrentInfoPayload>, ApiError> {
         Endpoint::<TorrentInfoGetEp>::new(self.client)
-            .call_query(query)
+            .call_query(TorrentInfoQuery { hash, timeout })
             .await
     }
 
@@ -234,17 +236,28 @@ impl<'a> TorrentApi<'a> {
     ///  If type is file, it will return a bittorrent file as a download. Not compatible with cached downloads.
     pub async fn export_data_query(
         &self,
-        query: TorrentExportDataQuery,
+        torrent_id: u32,
+        data_type: TorrentExportType,
     ) -> Result<TorrentExportResponse, ApiError> {
         let endpoint = Endpoint::<TorrentExportDataGetEp>::new(self.client);
 
-        match query.data_type {
+        match data_type {
             TorrentExportType::File => {
-                let bytes = endpoint.call_query_bytes(query).await?;
+                let bytes = endpoint
+                    .call_query_bytes(TorrentExportDataQuery {
+                        torrent_id,
+                        data_type,
+                    })
+                    .await?;
                 Ok(TorrentExportResponse::File(bytes))
             }
             TorrentExportType::Magnet => {
-                let response: ApiResponse<String> = endpoint.call_query(query).await?;
+                let response: ApiResponse<String> = endpoint
+                    .call_query(TorrentExportDataQuery {
+                        torrent_id,
+                        data_type,
+                    })
+                    .await?;
                 Ok(TorrentExportResponse::Json(response))
             }
         }

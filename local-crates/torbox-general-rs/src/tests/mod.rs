@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod general_test {
+pub mod general_test {
     use std::env;
 
     use crate::{GeneralApi, query::SpeedTestQuery, types::FileLength};
@@ -95,13 +95,7 @@ mod general_test {
     async fn test_get_speedtest_files_success() {
         let client = test_client();
         let api = GeneralApi::new(&client);
-
-        let query = SpeedTestQuery {
-            region: None,
-            test_length: Some(FileLength::Short),
-        };
-
-        let result = api.get_speedtest_files(query).await;
+        let result = api.get_speedtest_files(Some(FileLength::Short), None).await;
 
         match result {
             Ok(response) => {

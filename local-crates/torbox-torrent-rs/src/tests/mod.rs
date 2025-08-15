@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod torrent_test {
+pub mod torrent_test {
     use std::env;
 
     use crate::{
@@ -115,11 +115,7 @@ mod torrent_test {
         let client = test_client();
         let api = TorrentApi::new(&client);
 
-        let query = TorrentStatusQuery {
-            bypass_cache: true,
-            id: get_first_torrent_id().await,
-        };
-        let result = api.status_query(query).await;
+        let result = api.status_query(true, get_first_torrent_id().await).await;
 
         match result {
             Ok(response) => {
@@ -138,12 +134,9 @@ mod torrent_test {
         let client = test_client();
         let api = TorrentApi::new(&client);
 
-        let query = TorrentInfoQuery {
-            hash: get_first_torrent_hash().await,
-            timeout: Some(5),
-        };
-
-        let result = api.info_query(query).await;
+        let result = api
+            .info_query(get_first_torrent_hash().await, Some(5))
+            .await;
         match result {
             Ok(response) => {
                 println!("Success: {response:?}");
@@ -224,12 +217,10 @@ mod torrent_test {
         let client = test_client();
         let api = TorrentApi::new(&client);
 
-        let query = TorrentExportDataQuery {
-            torrent_id: get_first_torrent_id().await,
-            data_type: TorrentExportType::Magnet,
-        };
-
-        match api.export_data_query(query).await {
+        match api
+            .export_data_query(get_first_torrent_id().await, TorrentExportType::Magnet)
+            .await
+        {
             Ok(TorrentExportResponse::Json(response)) => {
                 println!("Magnet URI: {:?}", response.data);
                 assert!(response.success);
@@ -245,16 +236,14 @@ mod torrent_test {
         let client = test_client();
         let api = TorrentApi::new(&client);
 
-        let query = TorrentExportDataQuery {
-            torrent_id: get_first_torrent_id().await,
-            data_type: TorrentExportType::File,
-        };
-
-        match api.export_data_query(query).await {
+        match api
+            .export_data_query(get_first_torrent_id().await, TorrentExportType::File)
+            .await
+        {
             Ok(TorrentExportResponse::File(data)) => {
                 println!("Received file with {} bytes", data.len());
                 assert!(!data.is_empty());
-                assert!(data.starts_with(b"d8:announce")); // torrent file validation
+                assert!(data.starts_with(b"d8:announce"), "Issue: {data:?}"); // torrent file validation
             }
             Ok(_) => panic!("Expected file response but got JSON"),
             Err(e) => panic!("API call failed: {:?}", e),

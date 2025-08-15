@@ -12,11 +12,10 @@ use crate::{
         GetUpStatusEp,
     },
     query::SpeedTestQuery,
+    types::FileLength,
 };
 
-pub mod body;
 pub mod endpoint;
-pub mod payload;
 pub mod query;
 pub mod tests;
 pub mod types;
@@ -64,10 +63,14 @@ impl<'a> GeneralApi<'a> {
 
     pub async fn get_speedtest_files(
         &self,
-        query: SpeedTestQuery,
+        test_length: Option<FileLength>,
+        region: Option<String>,
     ) -> Result<ApiResponse<Vec<SpeedtestFile>>, ApiError> {
         Endpoint::<GetSpeedtestFilesEp>::new(self.client)
-            .call_query(query)
+            .call_query(SpeedTestQuery {
+                test_length,
+                region,
+            })
             .await
     }
 }

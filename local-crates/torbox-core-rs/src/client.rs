@@ -22,7 +22,8 @@ pub trait EndpointSpec {
 
 pub struct Endpoint<'c, S: EndpointSpec> {
     client: &'c TorboxClient,
-    path: Option<String>,
+    //todo: fix
+    _path: Option<String>,
     _marker: PhantomData<S>,
 }
 
@@ -30,7 +31,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
     pub fn new(client: &'c TorboxClient) -> Self {
         Self {
             client,
-            path: None,
+            _path: None,
             _marker: PhantomData,
         }
     }
@@ -38,7 +39,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
     pub fn new_with_url(client: &'c TorboxClient, full_url: impl Into<String>) -> Self {
         Self {
             client,
-            path: Some(full_url.into()),
+            _path: Some(full_url.into()),
             _marker: std::marker::PhantomData,
         }
     }

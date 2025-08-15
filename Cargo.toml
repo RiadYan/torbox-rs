@@ -33,6 +33,9 @@ torbox-ddl-rs = { version = "0.0.1-alpha.2", path = "local-crates/torbox-ddl-rs"
 torbox-torrent-rs = { version = "0.0.1-alpha.2", path = "local-crates/torbox-torrent-rs", features = [
     "specta",
 ] }
+torbox-general-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-general-rs", features = [
+    "specta",
+] }
 
 
 [workspace]
@@ -41,6 +44,7 @@ members = [
     "local-crates/torbox-ddl-rs",
     "local-crates/torbox-general-rs",
     "local-crates/torbox-torrent-rs",
+    "local-crates/torbox-user-rs",
 ]
 
 [workspace.dependencies]
