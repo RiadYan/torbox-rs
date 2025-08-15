@@ -1301,6 +1301,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "torbox-general-rs"
+version = "0.0.1-alpha.1"
+dependencies = [
+ "dotenvy",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "specta",
+ "tokio",
+ "torbox-core-rs",
+]
+
+[[package]]
 name = "torbox-rs"
 version = "0.0.1-alpha.2"
 dependencies = [

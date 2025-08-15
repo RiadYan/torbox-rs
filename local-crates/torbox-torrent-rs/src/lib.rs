@@ -240,7 +240,7 @@ impl<'a> TorrentApi<'a> {
 
         match query.data_type {
             TorrentExportType::File => {
-                let bytes = endpoint.call_query_raw(query).await?;
+                let bytes = endpoint.call_query_bytes(query).await?;
                 Ok(TorrentExportResponse::File(bytes))
             }
             TorrentExportType::Magnet => {

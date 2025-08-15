@@ -1,4 +1,5 @@
 pub mod creation;
+pub mod general;
 pub mod limits;
 pub mod torrent;
 pub mod user;

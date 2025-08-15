@@ -22,6 +22,7 @@ pub trait EndpointSpec {
 
 pub struct Endpoint<'c, S: EndpointSpec> {
     client: &'c TorboxClient,
+    path: Option<String>,
     _marker: PhantomData<S>,
 }
 
@@ -29,7 +30,16 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
     pub fn new(client: &'c TorboxClient) -> Self {
         Self {
             client,
+            path: None,
             _marker: PhantomData,
+        }
+    }
+
+    pub fn new_with_url(client: &'c TorboxClient, full_url: impl Into<String>) -> Self {
+        Self {
+            client,
+            path: Some(full_url.into()),
+            _marker: std::marker::PhantomData,
         }
     }
 
@@ -66,7 +76,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
             .await
     }
 
-    pub async fn call_query_raw(&self, query: S::Req) -> Result<Vec<u8>, ApiError>
+    pub async fn call_query_bytes(&self, query: S::Req) -> Result<Vec<u8>, ApiError>
     where
         S::Req: Serialize,
     {
@@ -81,6 +91,23 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
             .await?;
 
         Ok(response.bytes().await?.to_vec())
+    }
+
+    pub async fn call_query_raw<T>(&self, query: S::Req) -> Result<T, ApiError>
+    where
+        T: DeserializeOwned + FromBytes,
+        S::Req: Serialize,
+    {
+        let res = self
+            .client
+            .client
+            .request(S::METHOD, format!("{}/{}", self.client.base_url, S::PATH))
+            .headers(self.client.headers("application/json"))
+            .query(&query)
+            .send()
+            .await?;
+
+        self.client.parse_response::<T>(res).await
     }
 }
 
@@ -105,6 +132,12 @@ impl TorboxClient {
             token,
             base_url: "https://api.torbox.app/v1".to_string(),
         }
+    }
+
+    pub fn with_base_url(&self, new_base: impl Into<String>) -> Self {
+        let mut new = self.clone();
+        new.base_url = new_base.into();
+        new
     }
 
     pub fn token(&self) -> &str {

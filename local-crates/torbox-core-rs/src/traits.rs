@@ -20,6 +20,12 @@ impl FromBytes for String {
     }
 }
 
+impl FromBytes for bool {
+    fn from_bytes(bytes: Vec<u8>) -> Result<Self, ApiError> {
+        from_bytes_json(bytes)
+    }
+}
+
 // Helper for JSON types
 pub fn from_bytes_json<T: DeserializeOwned>(bytes: Vec<u8>) -> Result<T, ApiError> {
     serde_json::from_slice(&bytes).map_err(ApiError::from)

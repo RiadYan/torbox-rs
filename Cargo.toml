@@ -39,6 +39,7 @@ torbox-torrent-rs = { version = "0.0.1-alpha.2", path = "local-crates/torbox-tor
 members = [
     "local-crates/torbox-core-rs",
     "local-crates/torbox-ddl-rs",
+    "local-crates/torbox-general-rs",
     "local-crates/torbox-torrent-rs",
 ]
 
