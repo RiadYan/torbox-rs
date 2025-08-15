@@ -13,6 +13,9 @@ keywords = ["sdk", "development-tools"]
 tokio = { version = "1.45.1", features = ["macros"] }
 dotenvy = "0.15.7"
 
+[package.metadata.workspaces]
+independent = true
+
 [dependencies]
 torbox-core-rs = { version = "0.0.1-alpha.3", path = "../torbox-core-rs", features = [
     "specta",

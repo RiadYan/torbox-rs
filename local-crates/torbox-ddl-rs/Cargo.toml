@@ -13,6 +13,8 @@ keywords = ["sdk", "development-tools"]
 default = []
 specta = ["dep:specta", "torbox-core-rs/specta"]
 
+[package.metadata.workspaces]
+independent = true
 
 [dependencies]
 specta = { version = "2.0.0-rc.22", optional = true, features = [
