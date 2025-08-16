@@ -42,7 +42,7 @@ torbox-general-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-gen
 members = [
     "local-crates/torbox-core-rs",
     "local-crates/torbox-ddl-rs",
-    "local-crates/torbox-general-rs",
+    "local-crates/torbox-general-rs", "local-crates/torbox-notifications-rs",
     "local-crates/torbox-torrent-rs",
     "local-crates/torbox-user-rs",
 ]

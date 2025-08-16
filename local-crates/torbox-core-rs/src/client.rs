@@ -1,11 +1,10 @@
-use std::any::TypeId;
 use std::marker::PhantomData;
 
 use crate::api::ApiResponse;
 use crate::body::ToMultipart;
 use crate::error::ApiError;
 use crate::traits::FromBytes;
-use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
+use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
 use reqwest::multipart::Form;
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
