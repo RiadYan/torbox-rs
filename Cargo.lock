@@ -1278,7 +1278,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-core-rs"
-version = "0.0.1-alpha.4"
+version = "0.0.1-alpha.5"
 dependencies = [
  "async-trait",
  "base64",
@@ -1294,7 +1294,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-ddl-rs"
-version = "0.0.1-alpha.3"
+version = "0.0.1-alpha.4"
 dependencies = [
  "specta",
  "torbox-core-rs",
@@ -1302,7 +1302,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-general-rs"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 dependencies = [
  "dotenvy",
  "reqwest",
@@ -1315,7 +1315,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-notifications-rs"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 dependencies = [
  "dotenvy",
  "reqwest",
@@ -1328,7 +1328,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-rs"
-version = "0.0.1-alpha.3"
+version = "0.0.1-alpha.4"
 dependencies = [
  "specta",
  "torbox-core-rs",
@@ -1339,7 +1339,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-torrent-rs"
-version = "0.0.1-alpha.3"
+version = "0.0.1-alpha.4"
 dependencies = [
  "async-trait",
  "base64",
@@ -1355,7 +1355,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-user-rs"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 dependencies = [
  "dotenvy",
  "reqwest",
