@@ -4,9 +4,9 @@ version = "0.0.1-alpha.1"
 edition = "2024"
 description = "Rust SDK Torrent for the Torbox API"
 license = "MIT"
-authors = ["CarrotRub"]
-repository = "https://github.com/CarrotRub/torbox-rs"
-homepage = "https://github.com/CarrotRub/torbox-rs"
+authors = ["RiadYan"]
+repository = "https://github.com/RiadYan/torbox-rs"
+homepage = "https://github.com/RiadYan/torbox-rs"
 keywords = ["sdk", "development-tools"]
 
 [dev-dependencies]

@@ -4,9 +4,9 @@ version = "0.0.1-alpha.3"
 edition = "2024"
 description = "Rust SDK for the Torbox API"
 license = "MIT"
-authors = ["CarrotRub"]
-repository = "https://github.com/CarrotRub/torbox-rs"
-homepage = "https://github.com/CarrotRub/torbox-rs"
+authors = ["RiadYan"]
+repository = "https://github.com/RiadYan/torbox-rs"
+homepage = "https://github.com/RiadYan/torbox-rs"
 keywords = ["sdk", "development-tools"]
 
 [features]
@@ -42,7 +42,8 @@ torbox-general-rs = { version = "0.0.1-alpha.1", path = "local-crates/torbox-gen
 members = [
     "local-crates/torbox-core-rs",
     "local-crates/torbox-ddl-rs",
-    "local-crates/torbox-general-rs", "local-crates/torbox-notifications-rs",
+    "local-crates/torbox-general-rs",
+    "local-crates/torbox-notifications-rs",
     "local-crates/torbox-torrent-rs",
     "local-crates/torbox-user-rs",
 ]
