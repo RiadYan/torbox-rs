@@ -1296,6 +1296,9 @@ dependencies = [
 name = "torbox-ddl-rs"
 version = "0.0.1-alpha.4"
 dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
  "specta",
  "torbox-core-rs",
 ]

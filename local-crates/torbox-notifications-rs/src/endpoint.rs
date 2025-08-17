@@ -1,5 +1,5 @@
 use reqwest::Method;
-use torbox_core_rs::{client::EndpointSpec, data::user::UserProfile};
+use torbox_core_rs::{client::EndpointSpec, data::notifications::NotificationFeed};
 
 pub struct GetRssNotifFeedEp;
 
@@ -13,8 +13,8 @@ impl EndpointSpec for GetRssNotifFeedEp {
 pub struct GetNotifFeedEp;
 
 impl EndpointSpec for GetNotifFeedEp {
-    type Req = String;
-    type Resp = ();
+    type Req = ();
+    type Resp = Vec<NotificationFeed>;
     const PATH: &'static str = "api/notifications/mynotifications";
     const METHOD: Method = Method::GET;
 }
@@ -31,7 +31,7 @@ impl EndpointSpec for ClearAllNotificationsEp {
 pub struct ClearSingleNotificationEp;
 
 impl EndpointSpec for ClearSingleNotificationEp {
-    type Req = String;
+    type Req = u64;
     type Resp = ();
     const PATH: &'static str = "api/notifications/clear";
     const METHOD: Method = Method::POST;
