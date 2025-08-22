@@ -23,7 +23,7 @@ impl EndpointSpec for GetConfirmationCodeEp {
 
 pub struct AddReferalEp;
 
-//todo: finish this and write resp struct
+//todo: finish this and write resp struct or detail struct, will need to be changed cuz the response is absolutely hell to make since it's object inside of detail instead of data.
 impl EndpointSpec for AddReferalEp {
     type Req = UserDataQuery;
     type Resp = ();

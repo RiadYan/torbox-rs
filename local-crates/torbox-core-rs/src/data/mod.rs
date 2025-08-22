@@ -7,7 +7,7 @@ pub mod user;
 pub mod webdownload;
 
 use crate::data::{
-    creation::TorrentCreationResponse,
+    torrent::TorrentCreationResponse,
     limits::{ActiveLimitStatus, CooldownLimitStatus, MonthlyLimitStatus},
     torrent::{TorrentData, TorrentMap, TorrentMeta, TorrentStatus},
     user::{Job, UserProfile},

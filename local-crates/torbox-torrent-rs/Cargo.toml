@@ -1,6 +1,6 @@
 [package]
 name = "torbox-torrent-rs"
-version = "0.0.1-alpha.4"
+version = "0.0.1-alpha.5"
 edition = "2024"
 description = "Rust SDK Torrent for the Torbox API"
 license = "MIT"
@@ -29,7 +29,7 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "derive",
     "chrono",
 ] }
-torbox-core-rs = { version = "0.0.1-alpha.5", path = "../torbox-core-rs", features = [
+torbox-core-rs = { path = "../torbox-core-rs", features = [
     "specta",
 ] }
 reqwest = { version = "0.12.20", features = ["json", "stream"] }

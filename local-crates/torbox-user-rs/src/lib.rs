@@ -54,7 +54,7 @@ impl<'a> UserApi<'a> {
     }
 
     /// Not done
-    pub(crate) async fn refresh_api_token(
+    pub async fn refresh_api_token(
         &self,
         token: String,
         expires_at: u64,
