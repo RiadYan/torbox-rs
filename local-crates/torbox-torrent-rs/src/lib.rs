@@ -225,7 +225,7 @@ impl<'a> TorrentApi<'a> {
         body: TorrentControlBody,
     ) -> Result<ApiResponse<()>, ApiError> {
         Endpoint::<TorrentControlPostEp>::new(self.client)
-            .call(body)
+            .call_json(body)
             .await
     }
 

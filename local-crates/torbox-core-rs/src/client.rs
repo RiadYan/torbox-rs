@@ -51,7 +51,7 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         self.client.request(S::METHOD, url_suffix).await
     }
 
-    pub async fn call(&self, body: S::Req) -> Result<ApiResponse<S::Resp>, ApiError> {
+    pub async fn call_json(&self, body: S::Req) -> Result<ApiResponse<S::Resp>, ApiError> {
         self.client
             .request_with_json(S::METHOD, S::PATH, body)
             .await
@@ -73,6 +73,26 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         let form = body.to_multipart().await;
         self.client
             .request_multipart(S::METHOD, S::PATH, form)
+            .await
+    }
+
+    pub async fn call_query_json(
+        self,
+        query: S::Req,
+        body: S::Req,
+    ) -> Result<ApiResponse<S::Resp>, ApiError> {
+        let url = format!("{}/{}", self.client.base_url, S::PATH);
+        let req = self
+            .client
+            .client
+            .request(Method::POST, &url)
+            .headers(self.client.headers("application/json"))
+            .query(&query)
+            .json(&body);
+
+        let res = req.send().await?;
+        self.client
+            .parse_response::<ApiResponse<S::Resp>>(res)
             .await
     }
 

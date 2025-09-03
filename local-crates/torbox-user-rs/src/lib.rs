@@ -60,7 +60,7 @@ impl<'a> UserApi<'a> {
         expires_at: u64,
     ) -> Result<ApiResponse<String>, ApiError> {
         Endpoint::<RefreshApiToken>::new(self.client)
-            .call(RefreshApiTokenBody {
+            .call_json(RefreshApiTokenBody {
                 session_token: SessionToken { token, expires_at },
             })
             .await

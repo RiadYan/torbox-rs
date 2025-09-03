@@ -1,0 +1,26 @@
+use serde::Serialize;
+
+use crate::types::{WebDownloadControlSource, WebDownloadOperation};
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebDownloadCreateBody {
+    pub link: String,
+    pub password: Option<String>,
+    pub name: Option<String>,
+    /// Tells TorBox you want this web download.instantly queued. Optional.
+    pub as_queued: Option<bool>,
+    /// Only adds the download if it is cached on TorBox. If not cached, it won't be added.
+    pub add_only_if_cached: Option<bool>,
+}
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebDownloadControlBody {
+    #[serde(flatten)]
+    // the web download's id, optional if using the "all" parameter.
+    pub source: WebDownloadControlSource,
+    // the operation you want to perform on the torrent
+    pub operation: WebDownloadOperation,
+}
