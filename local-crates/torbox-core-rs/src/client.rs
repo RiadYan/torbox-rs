@@ -76,16 +76,20 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
             .await
     }
 
-    pub async fn call_query_json(
+    pub async fn call_query_json<Q, B>(
         self,
-        query: S::Req,
-        body: S::Req,
-    ) -> Result<ApiResponse<S::Resp>, ApiError> {
+        query: Q,
+        body: B,
+    ) -> Result<ApiResponse<S::Resp>, ApiError>
+    where
+        Q: Serialize,
+        B: Serialize,
+    {
         let url = format!("{}/{}", self.client.base_url, S::PATH);
         let req = self
             .client
             .client
-            .request(Method::POST, &url)
+            .request(S::METHOD, &url)
             .headers(self.client.headers("application/json"))
             .query(&query)
             .json(&body);

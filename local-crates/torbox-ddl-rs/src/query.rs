@@ -26,3 +26,9 @@ pub struct DownloadRequestLinkQuery {
     /// This is useful for creating permalinks so that you can just make this request URL the link.
     pub redirect: bool,
 }
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebdownloadControlQuery {
+    pub bypass_cache: bool,
+}

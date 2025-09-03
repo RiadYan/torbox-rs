@@ -5,7 +5,10 @@ use torbox_core_rs::{
     error::ApiError,
 };
 
-use crate::{body::WebdownloadCreateBody, endpoint::WebdownloadCreatePostEp};
+use crate::{
+    body::{WebdownloadControlReq, WebdownloadCreateBody},
+    endpoint::{WebdownloadControlPostEp, WebdownloadCreatePostEp},
+};
 
 //todo: Add the rest for ddl
 pub mod body;
@@ -31,6 +34,17 @@ impl<'a> WebdownloadApi<'a> {
     ) -> Result<ApiResponse<WebdownloadCreationResponse>, ApiError> {
         Endpoint::<WebdownloadCreatePostEp>::new(self.client)
             .call_multipart(body)
+            .await
+    }
+
+    pub async fn control_webdownload(
+        &self,
+        req: WebdownloadControlReq,
+    ) -> Result<ApiResponse<()>, ApiError> {
+        let (query, body) = req.into_parts();
+
+        Endpoint::<WebdownloadControlPostEp>::new(self.client)
+            .call_query_json(query, body)
             .await
     }
 }

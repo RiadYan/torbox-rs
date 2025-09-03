@@ -3,7 +3,10 @@ use reqwest::multipart::Form;
 use serde::Serialize;
 use torbox_core_rs::body::ToMultipart;
 
-use crate::types::{WebdownloadControlSource, WebdownloadOperation};
+use crate::{
+    query::WebdownloadControlQuery,
+    types::{WebdownloadControlSource, WebdownloadOperation},
+};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -37,7 +40,36 @@ impl ToMultipart for WebdownloadCreateBody {
             form = form.text("as_queued", queued.to_string());
         }
 
+        if let Some(add_only_if_cached) = self.add_only_if_cached {
+            form = form.text("add_only_if_cached", add_only_if_cached.to_string());
+        }
+
         form
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebdownloadControlReq {
+    #[serde(flatten)]
+    // the web download's id, optional if using the "all" parameter.
+    pub source: WebdownloadControlSource,
+    // the operation you want to perform on the torrent
+    pub operation: WebdownloadOperation,
+    pub bypass_cache: bool,
+}
+
+impl WebdownloadControlReq {
+    pub fn into_parts(self) -> (WebdownloadControlQuery, WebdownloadControlBody) {
+        (
+            WebdownloadControlQuery {
+                bypass_cache: self.bypass_cache,
+            },
+            WebdownloadControlBody {
+                source: self.source,
+                operation: self.operation,
+            },
+        )
     }
 }
 
@@ -45,8 +77,6 @@ impl ToMultipart for WebdownloadCreateBody {
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct WebdownloadControlBody {
     #[serde(flatten)]
-    // the web download's id, optional if using the "all" parameter.
     pub source: WebdownloadControlSource,
-    // the operation you want to perform on the torrent
     pub operation: WebdownloadOperation,
 }

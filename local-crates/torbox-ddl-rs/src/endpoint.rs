@@ -1,7 +1,7 @@
 use reqwest::Method;
 use torbox_core_rs::{client::EndpointSpec, data::webdownload::WebdownloadCreationResponse};
 
-use crate::body::{WebdownloadControlBody, WebdownloadCreateBody};
+use crate::body::{WebdownloadControlReq, WebdownloadCreateBody};
 
 pub struct WebdownloadCreatePostEp;
 
@@ -15,7 +15,7 @@ impl EndpointSpec for WebdownloadCreatePostEp {
 pub struct WebdownloadControlPostEp;
 
 impl EndpointSpec for WebdownloadControlPostEp {
-    type Req = WebdownloadControlBody;
+    type Req = WebdownloadControlReq;
     type Resp = ();
     const PATH: &'static str = "api/webdl/controlwebdownload";
     const METHOD: Method = Method::POST;
