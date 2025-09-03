@@ -73,7 +73,7 @@ pub struct TorrentRequestLinkQuery {
     pub torrent_id: u32,
 
     /// The files's ID that you want to download.
-    pub file_id: Option<u32>,
+    pub files_id: Option<Vec<u32>>,
 
     /// If you want a zip link. Required if no file_id. Takes precedence over file_id if both are given.
     pub zip_link: bool,

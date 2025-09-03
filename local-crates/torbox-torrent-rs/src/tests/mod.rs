@@ -180,7 +180,7 @@ pub mod torrent_test {
         let query = TorrentRequestLinkQuery {
             token: api.token().to_string(),
             torrent_id: get_first_torrent_id().await,
-            file_id: None,
+            files_id: None,
             zip_link: true,
             user_ip: None,
             redirect: true,
