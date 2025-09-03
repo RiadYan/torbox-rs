@@ -1,11 +1,11 @@
 use serde::Serialize;
 
-use crate::types::{WebDownloadControlSource, WebDownloadOperation};
+use crate::types::{WebdownloadControlSource, WebdownloadOperation};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct WebDownloadCreateBody {
+pub struct WebdownloadCreateBody {
     pub link: String,
     pub password: Option<String>,
     pub name: Option<String>,
@@ -17,10 +17,10 @@ pub struct WebDownloadCreateBody {
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct WebDownloadControlBody {
+pub struct WebdownloadControlBody {
     #[serde(flatten)]
     // the web download's id, optional if using the "all" parameter.
-    pub source: WebDownloadControlSource,
+    pub source: WebdownloadControlSource,
     // the operation you want to perform on the torrent
-    pub operation: WebDownloadOperation,
+    pub operation: WebdownloadOperation,
 }

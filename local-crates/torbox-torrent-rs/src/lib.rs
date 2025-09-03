@@ -42,6 +42,7 @@ impl<'a> TorrentApi<'a> {
         Self { client }
     }
 
+    #[allow(dead_code)]
     pub(crate) fn token(&self) -> &str {
         self.client.token()
     }

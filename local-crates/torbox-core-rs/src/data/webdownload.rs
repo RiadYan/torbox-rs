@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct WebDownloadCreationResponse {
+pub struct WebdownloadCreationResponse {
     pub hash: String,
     pub webdownload_id: String,
     pub auth_id: String,
@@ -11,7 +11,7 @@ pub struct WebDownloadCreationResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct WebDownloadFile {
+pub struct WebdownloadFile {
     pub id: u64,
     pub md5: String,
     pub s3_path: String,
@@ -23,7 +23,7 @@ pub struct WebDownloadFile {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct WebDownloadStatus {
+pub struct WebdownloadStatus {
     pub id: u64,
     pub hash: String,
     pub created_at: DateTime<FixedOffset>,
@@ -43,7 +43,7 @@ pub struct WebDownloadStatus {
     pub download_present: bool,
     pub download_finished: bool,
     pub error: String,
-    pub files: Vec<WebDownloadFile>,
+    pub files: Vec<WebdownloadFile>,
     pub inactive_check: u64,
     pub availability: u64,
 }

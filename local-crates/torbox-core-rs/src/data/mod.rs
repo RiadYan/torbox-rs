@@ -7,11 +7,11 @@ pub mod user;
 pub mod webdownload;
 
 use crate::data::{
-    torrent::TorrentCreationResponse,
     limits::{ActiveLimitStatus, CooldownLimitStatus, MonthlyLimitStatus},
+    torrent::TorrentCreationResponse,
     torrent::{TorrentData, TorrentMap, TorrentMeta, TorrentStatus},
     user::{Job, UserProfile},
-    webdownload::{HosterInfo, WebDownloadCreationResponse, WebDownloadStatus},
+    webdownload::{HosterInfo, WebdownloadCreationResponse, WebdownloadStatus},
 };
 use serde::{Deserialize, Serialize};
 
@@ -30,7 +30,7 @@ pub enum ApiDataResponse {
     ActiveLimit(ActiveLimitStatus),
     MonthlyLimit(MonthlyLimitStatus),
     CooldownLimit(CooldownLimitStatus),
-    WebDownloadCreation(WebDownloadCreationResponse),
-    WebDownloadList(Box<Vec<WebDownloadStatus>>),
+    WebdownloadCreation(WebdownloadCreationResponse),
+    WebdownloadList(Box<Vec<WebdownloadStatus>>),
     HosterInfoList(Box<Vec<HosterInfo>>),
 }
