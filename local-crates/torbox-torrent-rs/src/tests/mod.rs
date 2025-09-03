@@ -13,7 +13,7 @@ pub mod torrent_test {
     };
 
     use dotenvy::from_filename;
-    use torbox_core_rs::client::TorboxClient;
+    use torbox_core_rs::{client::TorboxClient, data::creation::DownloadLinkResponse};
 
     pub fn load_token_from_file() -> Option<String> {
         if let Err(err) = from_filename(".token") {
@@ -189,7 +189,7 @@ pub mod torrent_test {
 
         match api.request_download_link(query).await {
             Ok(response) => match response {
-                TorrentDownloadResponse::Json(json) => {
+                DownloadLinkResponse::Json(json) => {
                     println!("JSON Response: {json:?}");
                     assert!(json.success, "API responded with success=false");
                     assert!(
@@ -201,7 +201,7 @@ pub mod torrent_test {
                         "Invalid URL format in response"
                     );
                 }
-                TorrentDownloadResponse::Redirect(url) => {
+                DownloadLinkResponse::Redirect(url) => {
                     println!("Redirect URL: {url}");
                     assert!(url.starts_with("http"), "Invalid redirect URL format");
                 }

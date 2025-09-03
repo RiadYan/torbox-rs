@@ -2,7 +2,7 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
-pub struct DownloadRequestLinkQuery {
+pub struct WebdownloadRequestLinkQuery {
     /// Hidden and not shown by specta because token is needed for queries here :(
     #[cfg_attr(feature = "specta", specta(skip))]
     pub(crate) token: String,
@@ -31,4 +31,28 @@ pub struct DownloadRequestLinkQuery {
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct WebdownloadControlQuery {
     pub bypass_cache: bool,
+}
+
+/// `id` param isn't given because if it is, it will return an Object and not a Vec
+///
+/// Please use TorrentStatusQuery instead
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct ListWebdownloadsQuery {
+    id: Option<u32>,
+    /// Allows you to bypass the cached data, and always get fresh information.
+    ///
+    /// Useful if constantly querying for fresh download stats.
+    /// Otherwise, we request that you save our database a few calls.
+    pub bypass_cache: Option<bool>,
+
+    /// Determines the offset of items to get from the database.
+    ///
+    /// Default is 0. Optional.
+    pub offset: Option<u32>,
+
+    /// Determines the number of items to recieve per request.
+    ///
+    /// Default is 1000. Optional.
+    pub limit: Option<u32>,
 }

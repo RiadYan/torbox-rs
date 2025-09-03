@@ -2,12 +2,10 @@ use serde::Serialize;
 
 use crate::types::TorrentExportType;
 
-/// `id` param isn't given because if it is, it will return an Object and not a Vec
-///
-/// Please use TorrentStatusQuery instead
 #[derive(Debug, Serialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct ListTorrentsQuery {
+    pub id: Option<u32>,
     /// Allows you to bypass the cached data, and always get fresh information.
     ///
     /// Useful if constantly querying for fresh download stats.
@@ -28,6 +26,7 @@ pub struct ListTorrentsQuery {
 impl Default for ListTorrentsQuery {
     fn default() -> Self {
         Self {
+            id: None,
             bypass_cache: Some(false),
             offset: Some(0),
             limit: Some(1000),

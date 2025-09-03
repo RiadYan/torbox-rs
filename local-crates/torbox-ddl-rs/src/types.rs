@@ -1,4 +1,5 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use torbox_core_rs::api::ApiResponse;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]

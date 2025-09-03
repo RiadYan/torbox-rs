@@ -1,5 +1,5 @@
 use reqwest::Method;
-use torbox_core_rs::{client::EndpointSpec, data::torrent::TorrentStatus};
+use torbox_core_rs::{client::EndpointSpec, data::torrent::TorrentStatus, enums::OneOrMany};
 
 use crate::{
     body::{TorrentControlBody, TorrentCreateBody, TorrentInfoBody},
@@ -24,7 +24,7 @@ pub struct ListTorrentsGetEp;
 
 impl EndpointSpec for ListTorrentsGetEp {
     type Req = ListTorrentsQuery;
-    type Resp = Option<Vec<TorrentStatus>>;
+    type Resp = Option<OneOrMany<TorrentStatus>>;
     const PATH: &'static str = "api/torrents/mylist";
     const METHOD: Method = Method::GET;
 }

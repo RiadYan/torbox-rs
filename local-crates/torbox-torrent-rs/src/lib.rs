@@ -8,7 +8,8 @@ pub mod types;
 use torbox_core_rs::{
     api::ApiResponse,
     client::{Endpoint, EndpointSpec, TorboxClient},
-    data::torrent::TorrentStatus,
+    data::{creation::DownloadLinkResponse, torrent::TorrentStatus},
+    enums::OneOrMany,
     error::ApiError,
 };
 
@@ -79,9 +80,19 @@ impl<'a> TorrentApi<'a> {
         &self,
         query: ListTorrentsQuery,
     ) -> Result<ApiResponse<Option<Vec<TorrentStatus>>>, ApiError> {
-        Endpoint::<ListTorrentsGetEp>::new(self.client)
-            .call_query(query)
-            .await
+        let resp: ApiResponse<Option<OneOrMany<TorrentStatus>>> =
+            Endpoint::<ListTorrentsGetEp>::new(self.client)
+                .call_query(query)
+                .await?;
+
+        let normalized = resp.map(|opt| {
+            opt.map(|one_or_many| match one_or_many {
+                OneOrMany::One(item) => vec![item],
+                OneOrMany::Many(list) => list,
+            })
+        });
+
+        Ok(normalized)
     }
 
     /// Gets detailed status for a specific torrent
@@ -184,7 +195,7 @@ impl<'a> TorrentApi<'a> {
     pub async fn request_download_link(
         &self,
         query: TorrentRequestLinkQuery,
-    ) -> Result<TorrentDownloadResponse, ApiError> {
+    ) -> Result<DownloadLinkResponse, ApiError> {
         let endpoint = format!("{}/{}", self.client.base_url, TorrentRequestLinkGetEp::PATH);
         let request = self.client.client.get(&endpoint).query(&query);
 
@@ -199,16 +210,16 @@ impl<'a> TorrentApi<'a> {
                     .to_str()
                     .map_err(|_| ApiError::RedirectError("Invalid Location header".into()))?;
 
-                Ok(TorrentDownloadResponse::Redirect(location.to_string()))
+                Ok(DownloadLinkResponse::Redirect(location.to_string()))
             } else {
                 match response.json::<ApiResponse<String>>().await {
-                    Ok(json) => Ok(TorrentDownloadResponse::Json(json)),
+                    Ok(json) => Ok(DownloadLinkResponse::Json(json)),
                     Err(_) => Err(ApiError::UnexpectedPayload),
                 }
             }
         } else {
             let json = response.json::<ApiResponse<String>>().await?;
-            Ok(TorrentDownloadResponse::Json(json))
+            Ok(DownloadLinkResponse::Json(json))
         }
     }
 

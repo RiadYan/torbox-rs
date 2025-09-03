@@ -22,3 +22,14 @@ where
         serde_json::from_slice(&bytes).map_err(ApiError::from)
     }
 }
+
+impl<T> ApiResponse<T> {
+    pub fn map<U, F: FnOnce(T) -> U>(self, f: F) -> ApiResponse<U> {
+        ApiResponse {
+            success: self.success,
+            error: self.error,
+            detail: self.detail,
+            data: self.data.map(f),
+        }
+    }
+}
