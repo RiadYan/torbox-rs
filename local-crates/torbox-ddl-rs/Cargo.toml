@@ -25,7 +25,6 @@ specta = { version = "2.0.0-rc.22", optional = true, features = [
     "derive",
     "chrono",
 ] }
-torbox-core-rs = {  path = "../torbox-core-rs", features = [
-    "specta",
-] }
+torbox-core-rs = { path = "../torbox-core-rs", features = ["specta"] }
 reqwest = { version = "0.12.20", features = ["json", "stream"] }
+async-trait = { version = "0.1.89" }

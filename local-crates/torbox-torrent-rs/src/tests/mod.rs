@@ -74,6 +74,7 @@ pub mod torrent_test {
             allow_zip: true,
             name: None,
             as_queued: None,
+            add_only_if_cached: None
         };
 
         let result = api.create_torrent(body).await;

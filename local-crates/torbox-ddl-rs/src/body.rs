@@ -1,4 +1,7 @@
+use async_trait::async_trait;
+use reqwest::multipart::Form;
 use serde::Serialize;
+use torbox_core_rs::body::ToMultipart;
 
 use crate::types::{WebdownloadControlSource, WebdownloadOperation};
 
@@ -13,6 +16,29 @@ pub struct WebdownloadCreateBody {
     pub as_queued: Option<bool>,
     /// Only adds the download if it is cached on TorBox. If not cached, it won't be added.
     pub add_only_if_cached: Option<bool>,
+}
+
+#[async_trait]
+impl ToMultipart for WebdownloadCreateBody {
+    async fn to_multipart(self) -> Form {
+        let mut form = Form::new();
+
+        form = form.text("link", self.link);
+
+        if let Some(name) = self.name {
+            form = form.text("name", name);
+        }
+
+        if let Some(password) = self.password {
+            form = form.text("password", password);
+        }
+
+        if let Some(queued) = self.as_queued {
+            form = form.text("as_queued", queued.to_string());
+        }
+
+        form
+    }
 }
 
 #[derive(Debug, Serialize)]

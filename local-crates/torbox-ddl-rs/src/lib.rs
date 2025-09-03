@@ -1,4 +1,11 @@
-use torbox_core_rs::client::TorboxClient;
+use torbox_core_rs::{
+    api::ApiResponse,
+    client::{Endpoint, TorboxClient},
+    data::webdownload::WebdownloadCreationResponse,
+    error::ApiError,
+};
+
+use crate::{body::WebdownloadCreateBody, endpoint::WebdownloadCreatePostEp};
 
 //todo: Add the rest for ddl
 pub mod body;
@@ -16,5 +23,14 @@ pub struct WebdownloadApi<'a> {
 impl<'a> WebdownloadApi<'a> {
     pub fn new(client: &'a TorboxClient) -> Self {
         Self { client }
+    }
+
+    pub async fn create_webdownload(
+        &self,
+        body: WebdownloadCreateBody,
+    ) -> Result<ApiResponse<WebdownloadCreationResponse>, ApiError> {
+        Endpoint::<WebdownloadCreatePostEp>::new(self.client)
+            .call_multipart(body)
+            .await
     }
 }

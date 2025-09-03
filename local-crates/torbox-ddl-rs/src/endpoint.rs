@@ -16,7 +16,7 @@ pub struct WebdownloadControlPostEp;
 
 impl EndpointSpec for WebdownloadControlPostEp {
     type Req = WebdownloadControlBody;
-    type Resp = WebdownloadCreationResponse;
+    type Resp = ();
     const PATH: &'static str = "api/webdl/controlwebdownload";
     const METHOD: Method = Method::POST;
 }

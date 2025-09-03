@@ -120,6 +120,8 @@ pub struct TorrentCreateBody {
     ///
     /// This is **bypassed** if user is on free plan, and will process the request as normal in this case. Optional.
     pub as_queued: Option<bool>,
+
+    pub add_only_if_cached: Option<bool>,
 }
 #[async_trait]
 impl ToMultipart for TorrentCreateBody {
@@ -151,7 +153,11 @@ impl ToMultipart for TorrentCreateBody {
         }
 
         if let Some(queued) = self.as_queued {
-            form = form.text("queued", queued.to_string());
+            form = form.text("as_queued", queued.to_string());
+        }
+
+        if let Some(add) = self.add_only_if_cached {
+            form = form.text("add_only_if_cached", add.to_string());
         }
 
         form
