@@ -15,7 +15,7 @@ Add to your `Cargo.toml`:
 torbox-rs = "0.0.1-alpha.2"
 ```
 
-Need TypeScript type generation? Add the `specta` feature:
+If you need Typescript type generation,add the `specta` feature:
 
 ```toml
 [dependencies.torbox-rs]
@@ -25,7 +25,7 @@ features = ["specta"]  # Enables Specta support for Tauri/JS interop
 
 ## Quick Start
 
-Here's how to get rolling with the basics:
+Here's how to get starting with the basics:
 
 ```rust
 use torbox_rs::{TorboxClient, TorrentApi};
@@ -84,7 +84,7 @@ api.control_torrent(TorrentControlBody {
 ```
 
 ### Dual Response Handling
-The API smartly handles both formats:
+The API is able handles both formats:
 ```rust
 match api.export_data_query(query).await? {
     TorrentExportResponse::Json(json) => { /* Get magnet URI */ },
@@ -101,10 +101,10 @@ let info = api.info_query(TorrentInfoQuery {
 }).await?;
 ```
 
-## Pro Tips
-1. **Permalinks**: Always use `redirect: true` when generating download links
-2. **Caching**: Torrent lists update every 10 minutes unless forced
-3. **Errors**: Check `ApiError` variants for proper error handling
+## Tips and Tricks
+1. **Permalinks**: Always use `redirect: true` when generating download links.
+2. **Caching**: Torrent lists update every 10 minutes unless forced.
+3. **Errors**: Check `ApiError` variants for proper error handling, it can be a bit messy.
 
 ## Documentation
 - [Full API Docs](https://docs.rs/torbox-rs)
