@@ -1,4 +1,4 @@
-# torbox-rs 🦀
+# torbox-rs 
 
 [![crates.io](https://img.shields.io/crates/v/torbox-rs)](https://crates.io/crates/torbox-rs)
 [![docs.rs](https://docs.rs/torbox-rs/badge.svg)](https://docs.rs/torbox-rs)
@@ -6,7 +6,7 @@
 
 The official Rust SDK for TorBox's torrent services. Query, manage, and download torrents with full rust experience.
 
-## 📦 Installation
+## Installation
 
 Add to your `Cargo.toml`:
 
@@ -23,7 +23,7 @@ version = "0.0.1-alpha.2"
 features = ["specta"]  # Enables Specta support for Tauri/JS interop
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 Here's how to get rolling with the basics:
 
@@ -72,9 +72,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## 🔍 Key Features
+## Key Features
 
-### 📥 Torrent Management
+### Torrent Management
 ```rust
 // Pause/resume/delete torrents
 api.control_torrent(TorrentControlBody {
@@ -83,7 +83,7 @@ api.control_torrent(TorrentControlBody {
 }).await?;
 ```
 
-### 🔄 Dual Response Handling
+### Dual Response Handling
 The API smartly handles both formats:
 ```rust
 match api.export_data_query(query).await? {
@@ -92,7 +92,7 @@ match api.export_data_query(query).await? {
 }
 ```
 
-### 📊 Torrent Inspection
+### Torrent Inspection
 ```rust
 // Get detailed info (with 5s timeout)
 let info = api.info_query(TorrentInfoQuery {
@@ -101,14 +101,14 @@ let info = api.info_query(TorrentInfoQuery {
 }).await?;
 ```
 
-## 💡 Pro Tips
+## Pro Tips
 1. **Permalinks**: Always use `redirect: true` when generating download links
 2. **Caching**: Torrent lists update every 10 minutes unless forced
 3. **Errors**: Check `ApiError` variants for proper error handling
 
-## 📚 Documentation
+## Documentation
 - [Full API Docs](https://docs.rs/torbox-rs)
 - Local docs: `cargo doc --open`
 
-## 🤝 Need Help?
+## Need Help?
 Open an issue if you have any issues! I will be happy to help.
