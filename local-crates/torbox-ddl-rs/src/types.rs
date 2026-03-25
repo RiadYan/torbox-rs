@@ -17,3 +17,11 @@ pub enum WebdownloadControlSource {
 pub enum WebdownloadOperation {
     Delete,
 }
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub enum FormatType {
+    Object,
+    List,
+}

@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::types::FormatType;
+
 #[derive(Debug, Serialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct WebdownloadRequestLinkQuery {
@@ -55,4 +57,13 @@ pub struct ListWebdownloadsQuery {
     ///
     /// Default is 1000. Optional.
     pub limit: Option<u32>,
+}
+
+#[derive(Debug, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebdownloadCachedAvailabilityQuery {
+    /// The list of web hashes you want to check. Comma seperated. To find the hash, md5 the link
+    pub hash: Vec<String>,
+    /// Format you want the data in. Acceptable is either "object" or "list". List is the most performant option as it doesn't require modification of the list.
+    pub format: FormatType,
 }
