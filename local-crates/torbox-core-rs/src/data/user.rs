@@ -62,3 +62,63 @@ pub struct SessionToken {
     pub token: String,
     pub expires_at: u64,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct DeviceCodeAuth {
+    pub device_code: String,
+    pub interval: u64,
+    pub expires_at: String,
+    pub verification_url: String,
+    pub friendly_verification_url: String,
+    pub code: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct ReferralData {
+    pub referred_accounts: u32,
+    pub referral_code: String,
+    pub purchases_referred: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct SubscriptionData {
+    pub created_at: String,
+    pub updated_at: String,
+    pub subscription_code: String,
+    pub email_token: String,
+    pub auth_id: String,
+    pub plan_code: String,
+    pub status: String,
+    pub gateway: String,
+    pub plan_name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct TransactionData {
+    pub at: String,
+    #[serde(rename = "type")]
+    pub kind: String,
+    pub amount: u32,
+    pub transaction_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct SearchEngineData {
+    pub id: u64,
+    pub created_at: String,
+    pub auth_id: String,
+    #[serde(rename = "type")]
+    pub kind: String,
+    pub url: String,
+    pub apikey: String,
+    pub active: bool,
+    pub valid: bool,
+    pub download_type: String,
+    pub indexers: Vec<String>,
+}
+

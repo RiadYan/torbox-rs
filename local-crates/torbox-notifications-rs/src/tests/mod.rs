@@ -28,7 +28,7 @@ pub mod notification_test {
         let client = test_client();
         let api = NotificationApi::new(&client);
 
-        let result = api.get_rss_notif_feed().await;
+        let result = api.get_rss_feed().await;
 
         match result {
             Ok(feed) => {
@@ -45,7 +45,7 @@ pub mod notification_test {
         let client = test_client();
         let api = NotificationApi::new(&client);
 
-        let result = api.get_notif_feed().await;
+        let result = api.get_feed().await;
 
         match result {
             Ok(response) => {
@@ -68,11 +68,11 @@ pub mod notification_test {
         let api = NotificationApi::new(&client);
 
         // First get notifications to find one to clear
-        let notifs = api.get_notif_feed().await.unwrap();
+        let notifs = api.get_feed().await.unwrap();
         if let Some(notif_list) = notifs.data {
             if !notif_list.is_empty() {
                 let test_id = notif_list[0].id;
-                let result = api.clear_notification(test_id).await;
+                let result = api.clear(test_id).await;
 
                 match result {
                     Ok(response) => {
@@ -94,7 +94,7 @@ pub mod notification_test {
         let client = test_client();
         let api = NotificationApi::new(&client);
 
-        let result = api.clear_all_notifications().await;
+        let result = api.clear_all().await;
 
         match result {
             Ok(response) => {
@@ -110,7 +110,7 @@ pub mod notification_test {
         let client = test_client();
         let api = NotificationApi::new(&client);
 
-        let result = api.send_test_notification().await;
+        let result = api.send_test().await;
 
         match result {
             Ok(response) => {
@@ -118,7 +118,7 @@ pub mod notification_test {
                 assert!(response.success, "API responded with success=false");
 
                 // Verify the test notification appears in feed
-                let notifs = api.get_notif_feed().await.unwrap();
+                let notifs = api.get_feed().await.unwrap();
                 if let Some(notif_list) = notifs.data {
                     assert!(
                         notif_list.iter().any(|n| n.title.contains("Test")),

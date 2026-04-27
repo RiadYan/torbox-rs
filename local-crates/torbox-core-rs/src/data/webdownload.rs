@@ -17,6 +17,7 @@ pub struct WebdownloadFile {
     pub s3_path: String,
     pub name: String,
     pub size: u64,
+    pub opensubtitles_hash: Option<String>,
     pub mimetype: String,
     pub short_name: String,
 }
@@ -74,4 +75,45 @@ pub struct HosterInfo {
 
     #[serde(default)]
     pub limit: Option<u64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebDownloadCacheAvailability {
+    pub name: String,
+    pub size: u64,
+    pub hash: String,
+
+    pub files: Option<WebdownloadFile>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub enum WebdownloadHosterKind {
+    Hoster,
+    Stream,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct WebdownloadHosterList {
+    pub id: u32,
+    pub name: String,
+    pub domains: Vec<String>,
+    pub url: String,
+    pub icon: String,
+    pub status: bool,
+
+    #[serde(rename = "type")]
+    pub kind: WebdownloadHosterKind,
+
+    pub note: Option<String>,
+    pub nsfw: bool,
+
+    pub daily_link_limit: u32,
+    pub daily_link_used: u32,
+
+    pub daily_bandwith_limit: u64,
+    pub daily_bandwidth_used: u64,
+    pub per_link_size_limit: u64,
 }

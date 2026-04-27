@@ -26,7 +26,7 @@ pub mod user_test {
         let client = test_client();
         let api = UserApi::new(&client);
 
-        let result = api.get_user_data(false).await;
+        let result = api.get_data(false).await;
 
         match result {
             Ok(response) => {
@@ -40,7 +40,7 @@ pub mod user_test {
             Err(e) => panic!("API call failed: {e:?}"),
         }
 
-        let result_with_settings = api.get_user_data(true).await;
+        let result_with_settings = api.get_data(true).await;
 
         match result_with_settings {
             Ok(response) => {

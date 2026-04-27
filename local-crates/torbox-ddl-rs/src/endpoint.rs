@@ -3,14 +3,19 @@ use torbox_core_rs::{
     client::EndpointSpec,
     data::{
         creation::DownloadLinkResponse,
-        webdownload::{WebdownloadCreationResponse, WebdownloadStatus},
+        webdownload::{
+            WebDownloadCacheAvailability, WebdownloadCreationResponse, WebdownloadHosterList,
+            WebdownloadStatus,
+        },
     },
     enums::OneOrMany,
 };
 
 use crate::{
     body::{WebdownloadControlReq, WebdownloadCreateBody},
-    query::{ListWebdownloadsQuery, WebdownloadRequestLinkQuery},
+    query::{
+        ListWebdownloadsQuery, WebdownloadCachedAvailabilityQuery, WebdownloadRequestLinkQuery,
+    },
 };
 
 pub struct WebdownloadCreatePostEp;
@@ -55,8 +60,17 @@ impl EndpointSpec for ListWebdownloadsGetEp {
 pub struct WebdownloadCachedAvailabilityGetEp;
 
 impl EndpointSpec for WebdownloadCachedAvailabilityGetEp {
-    type Req = ListWebdownloadsQuery;
-    type Resp = Option<OneOrMany<WebdownloadStatus>>;
+    type Req = WebdownloadCachedAvailabilityQuery;
+    type Resp = Option<OneOrMany<WebDownloadCacheAvailability>>;
     const PATH: &'static str = "api/webdl/checkcached";
+    const METHOD: Method = Method::GET;
+}
+
+pub struct WebdownloadHosterListGetEp;
+
+impl EndpointSpec for WebdownloadHosterListGetEp {
+    type Req = ();
+    type Resp = Vec<WebdownloadHosterList>;
+    const PATH: &'static str = "api/webdl/hosters";
     const METHOD: Method = Method::GET;
 }
