@@ -117,7 +117,6 @@ pub mod notification_test {
                 println!("Test Notification Response: {:?}", response);
                 assert!(response.success, "API responded with success=false");
 
-                // Verify the test notification appears in feed
                 let notifs = api.get_feed().await.unwrap();
                 if let Some(notif_list) = notifs.data {
                     assert!(

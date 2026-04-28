@@ -4,7 +4,7 @@ use crate::api::ApiResponse;
 use crate::body::ToMultipart;
 use crate::error::ApiError;
 use crate::traits::FromBytes;
-use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
+use reqwest::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
 use reqwest::multipart::Form;
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
@@ -117,16 +117,23 @@ impl<'c, S: EndpointSpec> Endpoint<'c, S> {
         Ok(response.bytes().await?.to_vec())
     }
 
-    pub async fn call_query_raw<T>(&self, query: S::Req) -> Result<T, ApiError>
+    pub async fn call_query_raw<T>(&self, query: S::Req, content_type: &[u8]) -> Result<T, ApiError>
     where
         T: DeserializeOwned + FromBytes,
         S::Req: Serialize,
     {
+        let mut header_map = HeaderMap::new();
+        header_map.insert(
+            CONTENT_TYPE, 
+            HeaderValue::from_bytes(content_type)
+                .expect("Wrong CONTENT_TYPE, if you are unsure refer to the developer.mozilla.org documentation or use the provided CONTENT_XML or CONTENT_JSON constants")
+        );
+
         let res = self
             .client
             .client
             .request(S::METHOD, format!("{}/{}", self.client.base_url, S::PATH))
-            .headers(self.client.headers("application/json"))
+            .headers(header_map)
             .query(&query)
             .send()
             .await?;

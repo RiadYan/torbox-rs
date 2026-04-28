@@ -1,10 +1,12 @@
 use reqwest::Method;
 use torbox_core_rs::{client::EndpointSpec, data::notifications::NotificationFeed};
 
+use crate::query::{ClearSingleNotificationQuery, RssFeedQuery};
+
 pub struct GetRssNotifFeedEp;
 
 impl EndpointSpec for GetRssNotifFeedEp {
-    type Req = String;
+    type Req = RssFeedQuery;
     type Resp = String;
     const PATH: &'static str = "api/notifications/rss";
     const METHOD: Method = Method::GET;
@@ -31,7 +33,7 @@ impl EndpointSpec for ClearAllNotificationsEp {
 pub struct ClearSingleNotificationEp;
 
 impl EndpointSpec for ClearSingleNotificationEp {
-    type Req = u64;
+    type Req = ClearSingleNotificationQuery;
     type Resp = ();
     const PATH: &'static str = "api/notifications/clear";
     const METHOD: Method = Method::POST;

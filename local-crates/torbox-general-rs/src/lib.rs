@@ -4,6 +4,7 @@ use torbox_core_rs::{
     client::{Endpoint, TorboxClient},
     data::general::{ChangelogJsonVersion, SpeedtestFile, TorboxGeneralStats},
     error::ApiError,
+    network::constants::CONTENT_XML,
 };
 
 use crate::{
@@ -49,7 +50,7 @@ impl<'a> GeneralApi<'a> {
 
     pub async fn get_changelog_rss_feed(&self) -> Result<String, ApiError> {
         Endpoint::<GetChangelogRssFeedEp>::new(self.client)
-            .call_query_raw(())
+            .call_query_raw((), CONTENT_XML)
             .await
     }
 

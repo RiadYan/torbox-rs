@@ -3,11 +3,15 @@ use torbox_core_rs::{
     client::{Endpoint, TorboxClient},
     data::notifications::NotificationFeed,
     error::ApiError,
+    network::constants::CONTENT_XML,
 };
 
-use crate::endpoint::{
-    ClearAllNotificationsEp, ClearSingleNotificationEp, GetNotifFeedEp, GetRssNotifFeedEp,
-    SendTestNotificationEp,
+use crate::{
+    endpoint::{
+        ClearAllNotificationsEp, ClearSingleNotificationEp, GetNotifFeedEp, GetRssNotifFeedEp,
+        SendTestNotificationEp,
+    },
+    query::{ClearSingleNotificationQuery, RssFeedQuery},
 };
 
 pub mod endpoint;
@@ -33,7 +37,12 @@ impl<'a> NotificationApi<'a> {
 
     pub async fn get_rss_feed(&self) -> Result<String, ApiError> {
         Endpoint::<GetRssNotifFeedEp>::new(self.client)
-            .call_query_raw(self.client.token().to_string())
+            .call_query_raw(
+                RssFeedQuery {
+                    token: self.client.token().to_string(),
+                },
+                CONTENT_XML,
+            )
             .await
     }
 
@@ -45,7 +54,7 @@ impl<'a> NotificationApi<'a> {
 
     pub async fn clear(&self, id: u64) -> Result<ApiResponse<()>, ApiError> {
         Endpoint::<ClearSingleNotificationEp>::new(self.client)
-            .call_query(id)
+            .call_query(ClearSingleNotificationQuery { id })
             .await
     }
 
