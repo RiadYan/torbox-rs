@@ -5,21 +5,23 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct WebdownloadCreationResponse {
     pub hash: String,
-    pub webdownload_id: String,
+    pub webdownload_id: u32,
     pub auth_id: String,
 }
-
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct WebdownloadFile {
     pub id: u64,
-    pub md5: String,
+    pub md5: Option<String>,
     pub s3_path: String,
     pub name: String,
     pub size: u64,
+    pub zipped: bool,
+    pub infected: bool,
     pub opensubtitles_hash: Option<String>,
     pub mimetype: String,
     pub short_name: String,
+    pub absolute_path: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -35,18 +37,20 @@ pub struct WebdownloadStatus {
     pub download_state: String,
     pub progress: f64,
     pub download_speed: u64,
-    pub upload_speed: u64,
+    pub original_url: String,
     pub name: String,
     pub eta: u64,
     pub server: u64,
-    pub torrent_file: bool,
-    pub expires_at: DateTime<FixedOffset>,
+    pub expires_at: Option<DateTime<FixedOffset>>,
     pub download_present: bool,
     pub download_finished: bool,
-    pub error: String,
+    pub error: Option<String>,
+    pub cached: bool,
+    pub cached_at: Option<DateTime<FixedOffset>>,
+    pub download_id: Option<String>,
     pub files: Vec<WebdownloadFile>,
-    pub inactive_check: u64,
-    pub availability: u64,
+    pub alternative_hashes: Vec<String>,
+    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -89,6 +93,7 @@ pub struct WebDownloadCacheAvailability {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
+#[serde(rename_all = "snake_case")]
 pub enum WebdownloadHosterKind {
     Hoster,
     Stream,
@@ -113,7 +118,9 @@ pub struct WebdownloadHosterList {
     pub daily_link_limit: u32,
     pub daily_link_used: u32,
 
-    pub daily_bandwith_limit: u64,
+    pub daily_bandwidth_limit: u64,
     pub daily_bandwidth_used: u64,
     pub per_link_size_limit: u64,
+
+    pub regex: String,
 }

@@ -1297,10 +1297,12 @@ name = "torbox-ddl-rs"
 version = "0.0.1-alpha.5"
 dependencies = [
  "async-trait",
+ "dotenvy",
  "reqwest",
  "serde",
  "serde_json",
  "specta",
+ "tokio",
  "torbox-core-rs",
 ]
 

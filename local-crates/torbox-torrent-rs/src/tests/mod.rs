@@ -134,7 +134,7 @@ pub mod torrent_test {
     async fn test_torrent_info_query_success() {
         let client = test_client();
         let api = TorrentApi::new(&client);
-
+        println!("hash: {}", get_first_torrent_hash().await);
         let result = api
             .info_query(get_first_torrent_hash().await, Some(5))
             .await;

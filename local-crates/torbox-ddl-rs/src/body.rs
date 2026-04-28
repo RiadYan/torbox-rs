@@ -1,21 +1,21 @@
+use crate::{
+    query::WebdownloadControlQuery,
+    types::{WebdownloadControlSource, WebdownloadOperation},
+};
 use async_trait::async_trait;
 use reqwest::multipart::Form;
 use serde::Serialize;
 use torbox_core_rs::body::ToMultipart;
 
-use crate::{
-    query::WebdownloadControlQuery,
-    types::{WebdownloadControlSource, WebdownloadOperation},
-};
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
+#[derive(Default)]
 pub struct WebdownloadCreateBody {
     pub link: String,
     pub password: Option<String>,
     pub name: Option<String>,
-    /// Tells TorBox you want this web download.instantly queued. Optional.
+    /// Tells TorBox you want this web download instantly queued. Optional.
     pub as_queued: Option<bool>,
     /// Only adds the download if it is cached on TorBox. If not cached, it won't be added.
     pub add_only_if_cached: Option<bool>,
@@ -24,27 +24,21 @@ pub struct WebdownloadCreateBody {
 #[async_trait]
 impl ToMultipart for WebdownloadCreateBody {
     async fn to_multipart(self) -> Form {
-        let mut form = Form::new();
-
-        form = form.text("link", self.link);
-
+        let mut __form__ = Form::new();
+        __form__ = __form__.text("link", self.link);
         if let Some(name) = self.name {
-            form = form.text("name", name);
+            __form__ = __form__.text("name", name);
         }
-
         if let Some(password) = self.password {
-            form = form.text("password", password);
+            __form__ = __form__.text("password", password);
         }
-
         if let Some(queued) = self.as_queued {
-            form = form.text("as_queued", queued.to_string());
+            __form__ = __form__.text("as_queued", queued.to_string());
         }
-
         if let Some(add_only_if_cached) = self.add_only_if_cached {
-            form = form.text("add_only_if_cached", add_only_if_cached.to_string());
+            __form__ = __form__.text("add_only_if_cached", add_only_if_cached.to_string());
         }
-
-        form
+        __form__
     }
 }
 
@@ -54,9 +48,19 @@ pub struct WebdownloadControlReq {
     #[serde(flatten)]
     // the web download's id, optional if using the "all" parameter.
     pub source: WebdownloadControlSource,
-    // the operation you want to perform on the torrent
+    // the operation you want to perform on the web download
     pub operation: WebdownloadOperation,
     pub bypass_cache: bool,
+}
+
+impl Default for WebdownloadControlReq {
+    fn default() -> Self {
+        Self {
+            source: WebdownloadControlSource::All(false),
+            operation: WebdownloadOperation::Delete,
+            bypass_cache: false,
+        }
+    }
 }
 
 impl WebdownloadControlReq {

@@ -13,6 +13,10 @@ keywords = ["sdk", "development-tools"]
 default = []
 specta = ["dep:specta", "torbox-core-rs/specta"]
 
+[dev-dependencies]
+tokio = { version = "1.45.1", features = ["macros"] }
+dotenvy = "0.15.7"
+
 [package.metadata.workspaces]
 independent = true
 
