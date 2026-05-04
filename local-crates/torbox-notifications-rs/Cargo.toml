@@ -1,6 +1,6 @@
 [package]
 name = "torbox-notifications-rs"
-version = "0.0.1-alpha.3"
+version = "0.1.0"
 edition = "2024"
 description = "Rust SDK Torrent for the Torbox API"
 license = "MIT"
@@ -17,9 +17,7 @@ dotenvy = "0.15.7"
 independent = true
 
 [dependencies]
-torbox-core-rs = { path = "../torbox-core-rs", features = [
-    "specta",
-] }
+torbox-core-rs = { path = "../torbox-core-rs", features = ["specta"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 specta = { version = "2.0.0-rc.22", optional = true, features = [
