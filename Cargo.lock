@@ -1308,7 +1308,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-general-rs"
-version = "0.0.1-alpha.3"
+version = "0.1.0"
 dependencies = [
  "dotenvy",
  "reqwest",
@@ -1334,7 +1334,7 @@ dependencies = [
 
 [[package]]
 name = "torbox-rs"
-version = "0.0.1-alpha.5"
+version = "0.1.0"
 dependencies = [
  "specta",
  "torbox-core-rs",
