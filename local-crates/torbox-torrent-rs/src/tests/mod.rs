@@ -136,7 +136,7 @@ pub mod torrent_test {
         let api = TorrentApi::new(&client);
         println!("hash: {}", get_first_torrent_hash().await);
         let result = api
-            .info_query(get_first_torrent_hash().await, Some(5))
+            .info_query(get_first_torrent_hash().await, Some(20))
             .await;
         match result {
             Ok(response) => {
@@ -157,7 +157,7 @@ pub mod torrent_test {
         let api = TorrentApi::new(&client);
 
         let body =
-            TorrentInfoBody::try_new(Some(get_first_torrent_hash().await), None, None, Some(5))
+            TorrentInfoBody::try_new(Some(get_first_torrent_hash().await), None, None, Some(20))
                 .unwrap();
 
         let result = api.info_body(body).await;
@@ -217,11 +217,9 @@ pub mod torrent_test {
     async fn test_torrent_export_data_query_magnet_success() {
         let client = test_client();
         let api = TorrentApi::new(&client);
+        let id = get_first_torrent_id().await;
 
-        match api
-            .export_data_query(get_first_torrent_id().await, TorrentExportType::Magnet)
-            .await
-        {
+        match api.export_data_query(id, TorrentExportType::Magnet).await {
             Ok(TorrentExportResponse::Json(response)) => {
                 println!("Magnet URI: {:?}", response.data);
                 assert!(response.success);
